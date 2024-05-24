@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34916.146
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4400E772-0ED0-452C-B332-5EC80CEE5E38}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{410D04FA-6B58-4AC1-8C81-9D0F52C8E2BD}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coderynx.Result", "src\Coderynx.Result\Coderynx.Result.csproj", "{C0042FA5-A4A1-45EF-9878-6182B74BEE0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coderynx.Result.WebApi", "src\Coderynx.Result.WebApi\Coderynx.Result.WebApi.csproj", "{09EDA64C-60D9-4BC6-B9EB-9D615A7076CD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C0042FA5-A4A1-45EF-9878-6182B74BEE0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0042FA5-A4A1-45EF-9878-6182B74BEE0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0042FA5-A4A1-45EF-9878-6182B74BEE0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0042FA5-A4A1-45EF-9878-6182B74BEE0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09EDA64C-60D9-4BC6-B9EB-9D615A7076CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09EDA64C-60D9-4BC6-B9EB-9D615A7076CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09EDA64C-60D9-4BC6-B9EB-9D615A7076CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09EDA64C-60D9-4BC6-B9EB-9D615A7076CD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C0042FA5-A4A1-45EF-9878-6182B74BEE0F} = {4400E772-0ED0-452C-B332-5EC80CEE5E38}
+		{09EDA64C-60D9-4BC6-B9EB-9D615A7076CD} = {4400E772-0ED0-452C-B332-5EC80CEE5E38}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E03EA8AF-1CA6-49CF-A5FF-268712A52681}
+	EndGlobalSection
+EndGlobal
