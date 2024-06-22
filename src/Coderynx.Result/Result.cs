@@ -78,6 +78,11 @@ public class Result
             ? fail(Error)
             : success();
     }
+
+    public static implicit operator Result(Error error)
+    {
+        return Failure(error);
+    }
 }
 
 public class Result<TValue> : Result
@@ -101,5 +106,10 @@ public class Result<TValue> : Result
         return IsFailure
             ? fail(Error)
             : success(Value);
+    }
+
+    public static implicit operator Result<TValue>(Error error)
+    {
+        return Failure<TValue>(error);
     }
 }

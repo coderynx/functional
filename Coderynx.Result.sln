@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coderynx.Result", "src\Code
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coderynx.Result.WebApi", "src\Coderynx.Result.WebApi\Coderynx.Result.WebApi.csproj", "{09EDA64C-60D9-4BC6-B9EB-9D615A7076CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coderynx.Result.Tests", "tests\Coderynx.Result.Tests\Coderynx.Result.Tests.csproj", "{81284D6E-FDB2-48AD-B850-13F48B370BDC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +30,10 @@ Global
 		{09EDA64C-60D9-4BC6-B9EB-9D615A7076CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09EDA64C-60D9-4BC6-B9EB-9D615A7076CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09EDA64C-60D9-4BC6-B9EB-9D615A7076CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81284D6E-FDB2-48AD-B850-13F48B370BDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81284D6E-FDB2-48AD-B850-13F48B370BDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81284D6E-FDB2-48AD-B850-13F48B370BDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81284D6E-FDB2-48AD-B850-13F48B370BDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -35,6 +41,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{C0042FA5-A4A1-45EF-9878-6182B74BEE0F} = {4400E772-0ED0-452C-B332-5EC80CEE5E38}
 		{09EDA64C-60D9-4BC6-B9EB-9D615A7076CD} = {4400E772-0ED0-452C-B332-5EC80CEE5E38}
+		{81284D6E-FDB2-48AD-B850-13F48B370BDC} = {410D04FA-6B58-4AC1-8C81-9D0F52C8E2BD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E03EA8AF-1CA6-49CF-A5FF-268712A52681}
