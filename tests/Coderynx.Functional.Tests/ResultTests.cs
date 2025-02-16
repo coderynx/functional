@@ -1,4 +1,3 @@
-using Coderynx.Functional;
 using Coderynx.Functional.Result;
 using FluentAssertions;
 
@@ -15,7 +14,7 @@ public sealed class ResultTests
         var expectedError = Error.None;
 
         // Act
-        var result = Functional.Result.Result.Success(ResultSuccess.Created);
+        var result = Result.Result.Success(ResultSuccess.Created);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -29,7 +28,7 @@ public sealed class ResultTests
         var expectedError = TestError;
 
         // Act
-        var result = Functional.Result.Result.Failure(expectedError);
+        var result = Result.Result.Failure(expectedError);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -43,7 +42,7 @@ public sealed class ResultTests
         const string expectedValue = "TestValue";
 
         // Act
-        var result = Functional.Result.Result.Success(expectedValue, ResultSuccess.Created);
+        var result = Result.Result.Success(expectedValue, ResultSuccess.Created);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -58,7 +57,7 @@ public sealed class ResultTests
         var expectedError = TestError;
 
         // Act
-        var result = Functional.Result.Result.Failure<string>(expectedError);
+        var result = Result.Result.Failure<string>(expectedError);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -70,8 +69,8 @@ public sealed class ResultTests
     public void Match_ShouldReturnCorrectOutputBasedOnResult()
     {
         // Arrange
-        var successResult = Functional.Result.Result.Created("TestValue");
-        var failureResult = Functional.Result.Result.Failure<string>(TestError);
+        var successResult = Result.Result.Created("TestValue");
+        var failureResult = Result.Result.Failure<string>(TestError);
 
         // Act
         var successOutput = successResult.Match(() => "Success", _ => "Failure");
@@ -89,7 +88,7 @@ public sealed class ResultTests
         var expectedError = TestError;
 
         // Act
-        Functional.Result.Result result = expectedError;
+        Result.Result result = expectedError;
 
         // Assert
         result.IsSuccess.Should().BeFalse();

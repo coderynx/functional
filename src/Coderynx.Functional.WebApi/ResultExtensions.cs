@@ -1,4 +1,4 @@
-﻿using Coderynx.Result;
+﻿using Coderynx.Functional.Result;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

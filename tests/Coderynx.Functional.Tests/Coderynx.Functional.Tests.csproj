@@ -28,7 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Coderynx.Functional\Coderynx.Functional.csproj" />
+        <ProjectReference Include="..\..\src\Coderynx.Functional\Coderynx.Functional.csproj"/>
     </ItemGroup>
 
 </Project>
