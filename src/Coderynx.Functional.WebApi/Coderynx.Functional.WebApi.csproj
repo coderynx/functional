@@ -27,8 +27,4 @@
       <PackageReference Include="Coderynx.Result" Version="1.1.1" />
     </ItemGroup>
 
-    <ItemGroup>
-        <None Include="..\..\README.md" Pack="true" PackagePath=""/>
-    </ItemGroup>
-
 </Project>
