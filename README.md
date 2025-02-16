@@ -1,3 +1,3 @@
-# result
+# Functional
 
-Simple .NET result library
+Simple .NET functional library
