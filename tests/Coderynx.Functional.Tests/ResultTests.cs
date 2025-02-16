@@ -1,6 +1,8 @@
+using Coderynx.Functional;
+using Coderynx.Functional.Result;
 using FluentAssertions;
 
-namespace Coderynx.Result.Tests;
+namespace Coderynx.Functional.Tests;
 
 public sealed class ResultTests
 {
@@ -13,7 +15,7 @@ public sealed class ResultTests
         var expectedError = Error.None;
 
         // Act
-        var result = Result.Success(ResultSuccess.Created);
+        var result = Functional.Result.Result.Success(ResultSuccess.Created);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -27,7 +29,7 @@ public sealed class ResultTests
         var expectedError = TestError;
 
         // Act
-        var result = Result.Failure(expectedError);
+        var result = Functional.Result.Result.Failure(expectedError);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -41,7 +43,7 @@ public sealed class ResultTests
         const string expectedValue = "TestValue";
 
         // Act
-        var result = Result.Success(expectedValue, ResultSuccess.Created);
+        var result = Functional.Result.Result.Success(expectedValue, ResultSuccess.Created);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -56,7 +58,7 @@ public sealed class ResultTests
         var expectedError = TestError;
 
         // Act
-        var result = Result.Failure<string>(expectedError);
+        var result = Functional.Result.Result.Failure<string>(expectedError);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -68,8 +70,8 @@ public sealed class ResultTests
     public void Match_ShouldReturnCorrectOutputBasedOnResult()
     {
         // Arrange
-        var successResult = Result.Created("TestValue");
-        var failureResult = Result.Failure<string>(TestError);
+        var successResult = Functional.Result.Result.Created("TestValue");
+        var failureResult = Functional.Result.Result.Failure<string>(TestError);
 
         // Act
         var successOutput = successResult.Match(() => "Success", _ => "Failure");
@@ -87,7 +89,7 @@ public sealed class ResultTests
         var expectedError = TestError;
 
         // Act
-        Result result = expectedError;
+        Functional.Result.Result result = expectedError;
 
         // Assert
         result.IsSuccess.Should().BeFalse();

@@ -10,11 +10,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coderynx.Result", "src\Coderynx.Result\Coderynx.Result.csproj", "{C0042FA5-A4A1-45EF-9878-6182B74BEE0F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coderynx.Functional", "src\Coderynx.Functional\Coderynx.Functional.csproj", "{C0042FA5-A4A1-45EF-9878-6182B74BEE0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coderynx.Result.WebApi", "src\Coderynx.Result.WebApi\Coderynx.Result.WebApi.csproj", "{09EDA64C-60D9-4BC6-B9EB-9D615A7076CD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coderynx.Functional.WebApi", "src\Coderynx.Functional.WebApi\Coderynx.Functional.WebApi.csproj", "{09EDA64C-60D9-4BC6-B9EB-9D615A7076CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coderynx.Result.Tests", "tests\Coderynx.Result.Tests\Coderynx.Result.Tests.csproj", "{81284D6E-FDB2-48AD-B850-13F48B370BDC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coderynx.Functional.Tests", "tests\Coderynx.Functional.Tests\Coderynx.Functional.Tests.csproj", "{81284D6E-FDB2-48AD-B850-13F48B370BDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

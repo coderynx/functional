@@ -4,7 +4,7 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <PackageId>Coderynx.Result</PackageId>
+        <PackageId>Coderynx.Functional</PackageId>
         <Version>1.2.1</Version>
         <Authors>coderynx</Authors>
         <Description>Result library</Description>

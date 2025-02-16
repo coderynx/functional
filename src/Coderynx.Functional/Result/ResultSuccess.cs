@@ -1,4 +1,4 @@
-﻿namespace Coderynx.Result;
+﻿namespace Coderynx.Functional.Result;
 
 public enum ResultSuccess
 {
