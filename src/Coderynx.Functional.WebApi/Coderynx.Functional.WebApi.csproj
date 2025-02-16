@@ -4,11 +4,11 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <PackageId>Coderynx.Result.WebApi</PackageId>
+        <PackageId>Coderynx.Functional.WebApi</PackageId>
         <Version>1.2.1</Version>
         <Authors>coderynx</Authors>
-        <Description>Result library extensions for WebApi</Description>
-        <PackageTags>result</PackageTags>
+        <Description>Functional library extensions for WebApi</Description>
+        <PackageTags>functional</PackageTags>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -20,7 +20,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Coderynx.Result\Coderynx.Result.csproj"/>
+        <None Include="..\..\README.md" Pack="true" PackagePath=""/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Coderynx.Result" Version="1.1.1" />
     </ItemGroup>
 
     <ItemGroup>
