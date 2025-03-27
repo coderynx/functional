@@ -67,4 +67,9 @@ public sealed class Option<T> where T : class
     {
         return _value ?? valueProvider();
     }
+    
+    public T? ValueOrNull()
+    {
+        return _value;
+    }
 }

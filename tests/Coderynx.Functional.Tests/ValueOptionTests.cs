@@ -60,4 +60,24 @@ public sealed class ValueOptionTests
 
         value.Should().Be(-1);
     }
+    
+    [Fact]
+    public void ValueOrNull_ShouldReturnValue_WhenOptionIsSome()
+    {
+        var option = ValueOption<int>.Some(5);
+
+        var value = option.ValueOrNull();
+
+        value.Should().Be(5);
+    }
+    
+    [Fact]
+    public void ValueOrNull_ShouldReturnNull_WhenOptionIsNone()
+    {
+        var option = ValueOption<int>.None();
+
+        var value = option.ValueOrNull();
+
+        value.Should().BeNull();
+    }
 }

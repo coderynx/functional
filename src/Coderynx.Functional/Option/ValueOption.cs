@@ -28,4 +28,9 @@ public readonly struct ValueOption<T> where T : struct
     {
         return _value ?? valueProvider();
     }
+    
+    public T? ValueOrNull()
+    {
+        return _value;
+    }
 }

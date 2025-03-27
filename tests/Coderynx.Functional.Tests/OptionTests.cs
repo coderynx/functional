@@ -110,4 +110,22 @@ public sealed class OptionTests
 
         value.Should().Be("DefaultValue");
     }
+    
+    [Fact]
+    public void ValueOrNull_ShouldReturnValue_WhenOptionIsSome()
+    {
+        var option = Option<string>.Some("TestValue");
+        var value = option.ValueOrNull();
+
+        value.Should().Be("TestValue");
+    }
+    
+    [Fact]
+    public void ValueOrNull_ShouldReturnNull_WhenOptionIsNone()
+    {
+        var option = Option<string>.None();
+        var value = option.ValueOrNull();
+
+        value.Should().BeNull();
+    }
 }
