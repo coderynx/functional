@@ -5,16 +5,13 @@ VisualStudioVersion = 17.10.34916.146
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4400E772-0ED0-452C-B332-5EC80CEE5E38}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{410D04FA-6B58-4AC1-8C81-9D0F52C8E2BD}"
-	ProjectSection(SolutionItems) = preProject
-		Directory.Build.props = Directory.Build.props
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coderynx.Functional", "src\Coderynx.Functional\Coderynx.Functional.csproj", "{C0042FA5-A4A1-45EF-9878-6182B74BEE0F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coderynx.Functional.WebApi", "src\Coderynx.Functional.WebApi\Coderynx.Functional.WebApi.csproj", "{09EDA64C-60D9-4BC6-B9EB-9D615A7076CD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coderynx.Functional.Tests", "tests\Coderynx.Functional.Tests\Coderynx.Functional.Tests.csproj", "{81284D6E-FDB2-48AD-B850-13F48B370BDC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{9E467C7D-4388-471C-AE4E-316C3A30B662}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,7 +38,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{C0042FA5-A4A1-45EF-9878-6182B74BEE0F} = {4400E772-0ED0-452C-B332-5EC80CEE5E38}
 		{09EDA64C-60D9-4BC6-B9EB-9D615A7076CD} = {4400E772-0ED0-452C-B332-5EC80CEE5E38}
-		{81284D6E-FDB2-48AD-B850-13F48B370BDC} = {410D04FA-6B58-4AC1-8C81-9D0F52C8E2BD}
+		{81284D6E-FDB2-48AD-B850-13F48B370BDC} = {9E467C7D-4388-471C-AE4E-316C3A30B662}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E03EA8AF-1CA6-49CF-A5FF-268712A52681}
