@@ -1,4 +1,4 @@
-using Coderynx.Functional.Result;
+using Coderynx.Functional.Results;
 using FluentAssertions;
 
 namespace Coderynx.Functional.Tests;
@@ -14,7 +14,7 @@ public sealed class ResultTests
         var expectedError = Error.None;
 
         // Act
-        var result = Result.Result.Success(ResultSuccess.Created);
+        var result = Result.Success(ResultSuccess.Created);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -28,7 +28,7 @@ public sealed class ResultTests
         var expectedError = TestError;
 
         // Act
-        var result = Result.Result.Failure(expectedError);
+        var result = Result.Failure(expectedError);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -42,7 +42,7 @@ public sealed class ResultTests
         const string expectedValue = "TestValue";
 
         // Act
-        var result = Result.Result.Success(expectedValue, ResultSuccess.Created);
+        var result = Result.Success(expectedValue, ResultSuccess.Created);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -57,7 +57,7 @@ public sealed class ResultTests
         var expectedError = TestError;
 
         // Act
-        var result = Result.Result.Failure<string>(expectedError);
+        var result = Result.Failure<string>(expectedError);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -69,8 +69,8 @@ public sealed class ResultTests
     public void Match_ShouldReturnCorrectOutputBasedOnResult()
     {
         // Arrange
-        var successResult = Result.Result.Created("TestValue");
-        var failureResult = Result.Result.Failure<string>(TestError);
+        var successResult = Result.Created("TestValue");
+        var failureResult = Result.Failure<string>(TestError);
 
         // Act
         var successOutput = successResult.Match(() => "Success", _ => "Failure");
@@ -82,13 +82,70 @@ public sealed class ResultTests
     }
 
     [Fact]
+    public void Bind_ShouldReturnNewResult_WhenResultIsSuccess()
+    {
+        // Arrange
+        var initialResult = Result.Success(ResultSuccess.Created);
+
+        // Act
+        var boundResult = initialResult.Bind(() => Result.Success(ResultSuccess.Updated));
+
+        // Assert
+        boundResult.IsSuccess.Should().BeTrue();
+        boundResult.SuccessType.Should().Be(ResultSuccess.Updated);
+    }
+
+    [Fact]
+    public void Bind_ShouldPropagateFailure_WhenResultIsFailure()
+    {
+        // Arrange
+        var initialResult = Result.Failure(TestError);
+
+        // Act
+        var boundResult = initialResult.Bind(() => Result.Success(ResultSuccess.Updated));
+
+        // Assert
+        boundResult.IsSuccess.Should().BeFalse();
+        boundResult.Error.Should().Be(TestError);
+    }
+
+    [Fact]
+    public void Bind_WithGeneric_ShouldReturnNewResult_WhenResultIsSuccess()
+    {
+        // Arrange
+        var initialResult = Result.Success(42, ResultSuccess.Created);
+
+        // Act
+        var boundResult = initialResult.Bind(() => Result.Success("Success", ResultSuccess.Updated));
+
+        // Assert
+        boundResult.IsSuccess.Should().BeTrue();
+        boundResult.Value.Should().Be("Success");
+        boundResult.SuccessType.Should().Be(ResultSuccess.Updated);
+    }
+
+    [Fact]
+    public void Bind_WithGeneric_ShouldPropagateFailure_WhenResultIsFailure()
+    {
+        // Arrange
+        var initialResult = Result.Failure<int>(TestError);
+
+        // Act
+        var boundResult = initialResult.Bind(() => Result.Success("Success", ResultSuccess.Updated));
+
+        // Assert
+        boundResult.IsSuccess.Should().BeFalse();
+        boundResult.Error.Should().Be(TestError);
+    }
+    
+    [Fact]
     public void ImplicitConversion_ShouldReturnFailureResult()
     {
         // Arrange
         var expectedError = TestError;
 
         // Act
-        Result.Result result = expectedError;
+        Result result = expectedError;
 
         // Assert
         result.IsSuccess.Should().BeFalse();

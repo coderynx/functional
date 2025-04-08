@@ -1,4 +1,4 @@
-﻿namespace Coderynx.Functional.Result;
+﻿namespace Coderynx.Functional.Results;
 
 /// <summary>
 ///     Represents the success states of a result operation.

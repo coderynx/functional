@@ -1,4 +1,4 @@
-﻿using Coderynx.Functional.Result;
+﻿using Coderynx.Functional.Results;
 
 namespace Coderynx.Functional;
 

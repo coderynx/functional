@@ -1,4 +1,4 @@
-﻿namespace Coderynx.Functional.Result;
+﻿namespace Coderynx.Functional.Results;
 
 /// <summary>
 ///     Represents the possible error types for a result in the functional programming paradigm.

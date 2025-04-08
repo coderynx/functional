@@ -1,4 +1,4 @@
-using Coderynx.Functional.Option;
+using Coderynx.Functional.Options;
 using FluentAssertions;
 
 namespace Coderynx.Functional.Tests;

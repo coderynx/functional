@@ -1,4 +1,4 @@
-﻿namespace Coderynx.Functional.Option;
+﻿namespace Coderynx.Functional.Options;
 
 /// <summary>
 ///     Represents an optional value that can either contain a value of type <typeparamref name="T" /> or be empty (None).

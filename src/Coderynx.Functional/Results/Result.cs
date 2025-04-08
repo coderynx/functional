@@ -1,4 +1,4 @@
-﻿namespace Coderynx.Functional.Result;
+﻿namespace Coderynx.Functional.Results;
 
 /// <summary>
 ///     Represents the result of an operation, encapsulating success or failure states.
@@ -164,6 +164,16 @@ public class Result
     }
 
     /// <summary>
+    ///     Transforms the result into another result using the specified binding function.
+    /// </summary>
+    /// <param name="bind">The function to transform the result.</param>
+    /// <returns>The resulting <see cref="Result" /> or propagates the failure.</returns>
+    public Result Bind(Func<Result> bind)
+    {
+        return IsSuccess ? bind() : this;
+    }
+
+    /// <summary>
     ///     Implicitly converts an <see cref="Error" /> to a failed <see cref="Result" />.
     /// </summary>
     /// <param name="error">The error to convert.</param>
@@ -207,6 +217,7 @@ public class Result<TValue> : Result
         ? _value!
         : throw new InvalidOperationException("The value of a failure result can not be accessed.");
 
+
     /// <summary>
     ///     Matches the result to a success or failure function and returns the output.
     /// </summary>
@@ -219,6 +230,17 @@ public class Result<TValue> : Result
         return IsFailure
             ? fail(Error)
             : success(Value);
+    }
+
+    /// <summary>
+    ///     Transforms the result into another result with a value using the specified binding function.
+    /// </summary>
+    /// <typeparam name="TOut">The type of the value in the resulting result.</typeparam>
+    /// <param name="bind">The function to transform the result.</param>
+    /// <returns>The resulting <see cref="Result{TOut}" /> or propagates the failure.</returns>
+    public Result<TOut> Bind<TOut>(Func<Result<TOut>> bind)
+    {
+        return IsSuccess ? bind() : Failure<TOut>(Error);
     }
 
     /// <summary>
