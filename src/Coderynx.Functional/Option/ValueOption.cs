@@ -1,8 +1,8 @@
 ﻿namespace Coderynx.Functional.Option;
 
 /// <summary>
-/// Represents an optional value that can either contain a value of type <typeparamref name="T"/> or be empty (None).
-/// This struct is designed for value types (struct).
+///     Represents an optional value that can either contain a value of type <typeparamref name="T" /> or be empty (None).
+///     This struct is designed for value types (struct).
 /// </summary>
 /// <typeparam name="T">The type of the value.</typeparam>
 public readonly struct ValueOption<T> where T : struct
@@ -10,7 +10,7 @@ public readonly struct ValueOption<T> where T : struct
     private readonly T? _value;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ValueOption{T}"/> struct.
+    ///     Initializes a new instance of the <see cref="ValueOption{T}" /> struct.
     /// </summary>
     /// <param name="value">The value to wrap, or null to represent None.</param>
     private ValueOption(T? value)
@@ -19,26 +19,26 @@ public readonly struct ValueOption<T> where T : struct
     }
 
     /// <summary>
-    /// Creates a <see cref="ValueOption{T}"/> that contains a value.
+    ///     Creates a <see cref="ValueOption{T}" /> that contains a value.
     /// </summary>
     /// <param name="value">The value to wrap.</param>
-    /// <returns>A <see cref="ValueOption{T}"/> containing the specified value.</returns>
+    /// <returns>A <see cref="ValueOption{T}" /> containing the specified value.</returns>
     public static ValueOption<T> Some(T value)
     {
         return new ValueOption<T>(value);
     }
 
     /// <summary>
-    /// Creates a <see cref="ValueOption{T}"/> that represents None (no value).
+    ///     Creates a <see cref="ValueOption{T}" /> that represents None (no value).
     /// </summary>
-    /// <returns>A <see cref="ValueOption{T}"/> representing None.</returns>
+    /// <returns>A <see cref="ValueOption{T}" /> representing None.</returns>
     public static ValueOption<T> None()
     {
         return new ValueOption<T>(null);
     }
 
     /// <summary>
-    /// Matches the current state of the option and executes the corresponding function.
+    ///     Matches the current state of the option and executes the corresponding function.
     /// </summary>
     /// <typeparam name="TOut">The return type of the match functions.</typeparam>
     /// <param name="some">The function to execute if the option contains a value.</param>
@@ -50,7 +50,7 @@ public readonly struct ValueOption<T> where T : struct
     }
 
     /// <summary>
-    /// Returns the value if present, or the result of the provided value provider function if None.
+    ///     Returns the value if present, or the result of the provided value provider function if None.
     /// </summary>
     /// <param name="valueProvider">A function that provides a value if the option is None.</param>
     /// <returns>The value of the option, or the result of the value provider function.</returns>
@@ -60,7 +60,7 @@ public readonly struct ValueOption<T> where T : struct
     }
 
     /// <summary>
-    /// Returns the value if present, or null if None.
+    ///     Returns the value if present, or null if None.
     /// </summary>
     /// <returns>The value of the option, or null if None.</returns>
     public T? ValueOrNull()

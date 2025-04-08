@@ -110,7 +110,7 @@ public sealed class OptionTests
 
         value.Should().Be("DefaultValue");
     }
-    
+
     [Fact]
     public void ValueOrNull_ShouldReturnValue_WhenOptionIsSome()
     {
@@ -119,7 +119,7 @@ public sealed class OptionTests
 
         value.Should().Be("TestValue");
     }
-    
+
     [Fact]
     public void ValueOrNull_ShouldReturnNull_WhenOptionIsNone()
     {

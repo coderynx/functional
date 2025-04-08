@@ -1,7 +1,7 @@
 ﻿namespace Coderynx.Functional.Option;
 
 /// <summary>
-/// Represents an optional value that may or may not contain a value of type <typeparamref name="T"/>.
+///     Represents an optional value that may or may not contain a value of type <typeparamref name="T" />.
 /// </summary>
 /// <typeparam name="T">The type of the value contained in the option. Must be a reference type.</typeparam>
 public sealed class Option<T> where T : class
@@ -9,7 +9,7 @@ public sealed class Option<T> where T : class
     private readonly T? _value;
 
     /// <summary>
-    /// Private constructor to initialize the option with a value or null.
+    ///     Private constructor to initialize the option with a value or null.
     /// </summary>
     /// <param name="value">The value to store, or null if the option is empty.</param>
     private Option(T? value)
@@ -18,12 +18,12 @@ public sealed class Option<T> where T : class
     }
 
     /// <summary>
-    /// Indicates whether the option contains a value.
+    ///     Indicates whether the option contains a value.
     /// </summary>
     public bool IsSome => _value is not null;
 
     /// <summary>
-    /// Creates an option containing a value.
+    ///     Creates an option containing a value.
     /// </summary>
     /// <param name="value">The value to store in the option.</param>
     /// <returns>An option containing the specified value.</returns>
@@ -33,7 +33,7 @@ public sealed class Option<T> where T : class
     }
 
     /// <summary>
-    /// Creates an empty option.
+    ///     Creates an empty option.
     /// </summary>
     /// <returns>An empty option.</returns>
     public static Option<T> None()
@@ -42,7 +42,7 @@ public sealed class Option<T> where T : class
     }
 
     /// <summary>
-    /// Transforms the value inside the option using the specified mapping function.
+    ///     Transforms the value inside the option using the specified mapping function.
     /// </summary>
     /// <typeparam name="TOut">The type of the transformed value.</typeparam>
     /// <param name="map">The function to transform the value.</param>
@@ -53,18 +53,21 @@ public sealed class Option<T> where T : class
     }
 
     /// <summary>
-    /// Transforms the value inside the option into a value type using the specified mapping function.
+    ///     Transforms the value inside the option into a value type using the specified mapping function.
     /// </summary>
     /// <typeparam name="TOut">The value type of the transformed value.</typeparam>
     /// <param name="map">The function to transform the value.</param>
-    /// <returns>A <see cref="ValueOption{TOut}"/> containing the transformed value, or an empty option if the original option is empty.</returns>
+    /// <returns>
+    ///     A <see cref="ValueOption{TOut}" /> containing the transformed value, or an empty option if the original option
+    ///     is empty.
+    /// </returns>
     public ValueOption<TOut> MapValue<TOut>(Func<T, TOut> map) where TOut : struct
     {
         return _value is not null ? ValueOption<TOut>.Some(map(_value)) : ValueOption<TOut>.None();
     }
 
     /// <summary>
-    /// Transforms the value inside the option into another option using the specified binding function.
+    ///     Transforms the value inside the option into another option using the specified binding function.
     /// </summary>
     /// <typeparam name="TOut">The type of the value in the resulting option.</typeparam>
     /// <param name="bind">The function to transform the value into another option.</param>
@@ -75,7 +78,7 @@ public sealed class Option<T> where T : class
     }
 
     /// <summary>
-    /// Matches the option to one of two functions based on whether it contains a value.
+    ///     Matches the option to one of two functions based on whether it contains a value.
     /// </summary>
     /// <typeparam name="TOut">The return type of the match functions.</typeparam>
     /// <param name="some">The function to execute if the option contains a value.</param>
@@ -87,7 +90,7 @@ public sealed class Option<T> where T : class
     }
 
     /// <summary>
-    /// Matches the option to one of two actions based on whether it contains a value.
+    ///     Matches the option to one of two actions based on whether it contains a value.
     /// </summary>
     /// <param name="some">The action to execute if the option contains a value.</param>
     /// <param name="none">The action to execute if the option is empty.</param>
@@ -104,7 +107,7 @@ public sealed class Option<T> where T : class
     }
 
     /// <summary>
-    /// Filters the option based on a predicate function.
+    ///     Filters the option based on a predicate function.
     /// </summary>
     /// <param name="filter">The predicate function to test the value.</param>
     /// <returns>The original option if the predicate is true, or an empty option otherwise.</returns>
@@ -114,7 +117,7 @@ public sealed class Option<T> where T : class
     }
 
     /// <summary>
-    /// Retrieves the value inside the option or throws an exception if the option is empty.
+    ///     Retrieves the value inside the option or throws an exception if the option is empty.
     /// </summary>
     /// <returns>The value inside the option.</returns>
     /// <exception cref="InvalidOperationException">Thrown if the option is empty.</exception>
@@ -124,7 +127,7 @@ public sealed class Option<T> where T : class
     }
 
     /// <summary>
-    /// Retrieves the value inside the option or provides a fallback value using a function if the option is empty.
+    ///     Retrieves the value inside the option or provides a fallback value using a function if the option is empty.
     /// </summary>
     /// <param name="valueProvider">The function to provide a fallback value.</param>
     /// <returns>The value inside the option, or the fallback value.</returns>
@@ -134,7 +137,7 @@ public sealed class Option<T> where T : class
     }
 
     /// <summary>
-    /// Retrieves the value inside the option or null if the option is empty.
+    ///     Retrieves the value inside the option or null if the option is empty.
     /// </summary>
     /// <returns>The value inside the option, or null.</returns>
     public T? ValueOrNull()

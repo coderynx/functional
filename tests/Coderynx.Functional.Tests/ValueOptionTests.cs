@@ -60,7 +60,7 @@ public sealed class ValueOptionTests
 
         value.Should().Be(-1);
     }
-    
+
     [Fact]
     public void ValueOrNull_ShouldReturnValue_WhenOptionIsSome()
     {
@@ -70,7 +70,7 @@ public sealed class ValueOptionTests
 
         value.Should().Be(5);
     }
-    
+
     [Fact]
     public void ValueOrNull_ShouldReturnNull_WhenOptionIsNone()
     {

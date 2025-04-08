@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Coderynx.Functional" Version="1.3.2" />
+        <PackageReference Include="Coderynx.Functional" Version="1.3.2"/>
     </ItemGroup>
 
 </Project>

@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace Coderynx.Functional.WebApi;
 
 /// <summary>
-/// Provides extension methods for converting `Result` objects to HTTP results.
+///     Provides extension methods for converting `Result` objects to HTTP results.
 /// </summary>
 public static class ResultExtensions
 {
     /// <summary>
-    /// Converts a `Result` object to an HTTP result.
+    ///     Converts a `Result` object to an HTTP result.
     /// </summary>
     /// <param name="result">The `Result` object to convert.</param>
     /// <returns>An `IResult` representing the HTTP response.</returns>
@@ -20,7 +20,7 @@ public static class ResultExtensions
     }
 
     /// <summary>
-    /// Converts a `Result` object with a value to an HTTP result.
+    ///     Converts a `Result` object with a value to an HTTP result.
     /// </summary>
     /// <typeparam name="TValue">The type of the value contained in the `Result`.</typeparam>
     /// <param name="result">The `Result` object to convert.</param>
@@ -33,7 +33,7 @@ public static class ResultExtensions
     }
 
     /// <summary>
-    /// Converts a `Result` object with a value to an HTTP result, applying a transformation to the value.
+    ///     Converts a `Result` object with a value to an HTTP result, applying a transformation to the value.
     /// </summary>
     /// <typeparam name="TValue">The type of the value contained in the `Result`.</typeparam>
     /// <param name="result">The `Result` object to convert.</param>
@@ -52,7 +52,7 @@ public static class ResultExtensions
     }
 
     /// <summary>
-    /// Internal method to convert a `Result` object to an HTTP result.
+    ///     Internal method to convert a `Result` object to an HTTP result.
     /// </summary>
     /// <param name="result">The `Result` object to convert.</param>
     /// <param name="value">The value to include in the HTTP response, if applicable.</param>
@@ -76,7 +76,7 @@ public static class ResultExtensions
     }
 
     /// <summary>
-    /// Converts a failed `Result` object to a `ProblemDetails` HTTP response.
+    ///     Converts a failed `Result` object to a `ProblemDetails` HTTP response.
     /// </summary>
     /// <param name="result">The failed `Result` object to convert.</param>
     /// <returns>An `IResult` representing the HTTP problem response.</returns>
