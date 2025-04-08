@@ -80,62 +80,62 @@ public sealed class ResultTests
         successOutput.Should().Be("Success");
         failureOutput.Should().Be("Failure");
     }
-
+    
     [Fact]
-    public void Bind_ShouldReturnNewResult_WhenResultIsSuccess()
+    public void Bind_ShouldReturnNextResult_WhenCurrentResultIsSuccess()
     {
         // Arrange
         var initialResult = Result.Success(ResultSuccess.Created);
 
         // Act
-        var boundResult = initialResult.Bind(() => Result.Success(ResultSuccess.Updated));
+        var finalResult = initialResult.Bind(() => Result.Success(ResultSuccess.Updated));
 
         // Assert
-        boundResult.IsSuccess.Should().BeTrue();
-        boundResult.SuccessType.Should().Be(ResultSuccess.Updated);
+        finalResult.IsSuccess.Should().BeTrue();
+        finalResult.SuccessType.Should().Be(ResultSuccess.Updated);
     }
 
     [Fact]
-    public void Bind_ShouldPropagateFailure_WhenResultIsFailure()
+    public void Bind_ShouldPropagateFailure_WhenCurrentResultIsFailure()
     {
         // Arrange
-        var initialResult = Result.Failure(TestError);
+        var initialResult = Result.Failure(new Error(ResultError.InvalidInput, "Invalid", "Invalid"));
 
         // Act
-        var boundResult = initialResult.Bind(() => Result.Success(ResultSuccess.Updated));
+        var finalResult = initialResult.Bind(() => Result.Success(ResultSuccess.Updated));
 
         // Assert
-        boundResult.IsSuccess.Should().BeFalse();
-        boundResult.Error.Should().Be(TestError);
+        finalResult.IsSuccess.Should().BeFalse();
+        finalResult.Error.Should().Be(initialResult.Error);
     }
 
     [Fact]
-    public void Bind_WithGeneric_ShouldReturnNewResult_WhenResultIsSuccess()
+    public void Bind_WithValue_ShouldReturnNextResult_WhenCurrentResultIsSuccess()
     {
         // Arrange
-        var initialResult = Result.Success(42, ResultSuccess.Created);
+        var initialResult = Result.Success("InitialValue", ResultSuccess.Created);
 
         // Act
-        var boundResult = initialResult.Bind(() => Result.Success("Success", ResultSuccess.Updated));
+        var finalResult = initialResult.Bind(value => Result.Success(value + "Updated", ResultSuccess.Updated));
 
         // Assert
-        boundResult.IsSuccess.Should().BeTrue();
-        boundResult.Value.Should().Be("Success");
-        boundResult.SuccessType.Should().Be(ResultSuccess.Updated);
+        finalResult.IsSuccess.Should().BeTrue();
+        finalResult.Value.Should().Be("InitialValueUpdated");
+        finalResult.SuccessType.Should().Be(ResultSuccess.Updated);
     }
 
     [Fact]
-    public void Bind_WithGeneric_ShouldPropagateFailure_WhenResultIsFailure()
+    public void Bind_WithValue_ShouldPropagateFailure_WhenCurrentResultIsFailure()
     {
         // Arrange
-        var initialResult = Result.Failure<int>(TestError);
+        var initialResult = Result.Failure<string>(new Error(ResultError.InvalidInput, "Invalid", "Invalid"));
 
         // Act
-        var boundResult = initialResult.Bind(() => Result.Success("Success", ResultSuccess.Updated));
+        var finalResult = initialResult.Bind(value => Result.Success(value + "Updated", ResultSuccess.Updated));
 
         // Assert
-        boundResult.IsSuccess.Should().BeFalse();
-        boundResult.Error.Should().Be(TestError);
+        finalResult.IsSuccess.Should().BeFalse();
+        finalResult.Error.Should().Be(initialResult.Error);
     }
     
     [Fact]
