@@ -1,6 +1,7 @@
-﻿using Coderynx.Functional.Result;
+﻿using Coderynx.Functional.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using HttpResults = Microsoft.AspNetCore.Http.Results;
 
 namespace Coderynx.Functional.WebApi;
 
@@ -14,7 +15,7 @@ public static class ResultExtensions
     /// </summary>
     /// <param name="result">The `Result` object to convert.</param>
     /// <returns>An `IResult` representing the HTTP response.</returns>
-    public static IResult ToHttpResult(this Result.Result result)
+    public static IResult ToHttpResult(this Result result)
     {
         return ToHttpResultInternal(result, null);
     }
@@ -57,18 +58,18 @@ public static class ResultExtensions
     /// <param name="result">The `Result` object to convert.</param>
     /// <param name="value">The value to include in the HTTP response, if applicable.</param>
     /// <returns>An `IResult` representing the HTTP response.</returns>
-    private static IResult ToHttpResultInternal(Result.Result result, object? value)
+    private static IResult ToHttpResultInternal(Result result, object? value)
     {
         if (result.IsSuccess)
         {
             return result.SuccessType switch
             {
-                ResultSuccess.Created => Results.Ok(value),
-                ResultSuccess.Updated => Results.NoContent(),
-                ResultSuccess.Deleted => Results.NoContent(),
-                ResultSuccess.Found => Results.Ok(value),
-                ResultSuccess.Accepted => Results.Accepted(),
-                _ => Results.Ok()
+                ResultSuccess.Created => HttpResults.Ok(value),
+                ResultSuccess.Updated => HttpResults.NoContent(),
+                ResultSuccess.Deleted => HttpResults.NoContent(),
+                ResultSuccess.Found => HttpResults.Ok(value),
+                ResultSuccess.Accepted => HttpResults.Accepted(),
+                _ => HttpResults.Ok()
             };
         }
 
@@ -80,7 +81,7 @@ public static class ResultExtensions
     /// </summary>
     /// <param name="result">The failed `Result` object to convert.</param>
     /// <returns>An `IResult` representing the HTTP problem response.</returns>
-    private static IResult ToProblem(this Result.Result result)
+    private static IResult ToProblem(this Result result)
     {
         var details = new ProblemDetails
         {
@@ -103,6 +104,6 @@ public static class ResultExtensions
             Instance = null
         };
 
-        return Results.Problem(details);
+        return HttpResults.Problem(details);
     }
 }
