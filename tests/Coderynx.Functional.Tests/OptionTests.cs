@@ -94,6 +94,33 @@ public sealed class OptionTests
     }
 
     [Fact]
+    public async Task BindAsync_ShouldReturnTransformedOption_WhenOptionIsSome()
+    {
+        var option = Option<string>.Some("TestValue");
+        var boundOption = await option.BindAsync(async value =>
+        {
+            await Task.Delay(10);
+            return Option<string>.Some(value.ToUpper());
+        });
+
+        boundOption.IsSome.Should().BeTrue();
+        boundOption.ValueOrThrow().Should().Be("TESTVALUE");
+    }
+
+    [Fact]
+    public async Task BindAsync_ShouldReturnNone_WhenOptionIsNone()
+    {
+        var option = Option<string>.None();
+        var boundOption = await option.BindAsync(async value =>
+        {
+            await Task.Delay(10);
+            return Option<string>.Some(value.ToUpper());
+        });
+
+        boundOption.IsSome.Should().BeFalse();
+    }
+
+    [Fact]
     public void ValueOr_ShouldReturnValue_WhenOptionIsSome()
     {
         var option = Option<string>.Some("TestValue");

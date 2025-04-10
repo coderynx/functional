@@ -78,6 +78,17 @@ public sealed class Option<T> where T : class
     }
 
     /// <summary>
+    ///     Transforms the value inside the option into another option using the specified binding function asynchronously.
+    /// </summary>
+    /// <typeparam name="TOut">The type of the value in the resulting option.</typeparam>
+    /// <param name="bind">The function to transform the value into another option.</param>
+    /// <returns>The resulting option, or an empty option if the original option is empty.</returns>
+    public async Task<Option<TOut>> BindAsync<TOut>(Func<T, Task<Option<TOut>>> bind) where TOut : class
+    {
+        return _value is not null ? await bind(_value) : Option<TOut>.None();
+    }
+
+    /// <summary>
     ///     Matches the option to one of two functions based on whether it contains a value.
     /// </summary>
     /// <typeparam name="TOut">The return type of the match functions.</typeparam>

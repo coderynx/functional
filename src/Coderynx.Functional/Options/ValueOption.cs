@@ -50,6 +50,17 @@ public readonly struct ValueOption<T> where T : struct
     }
 
     /// <summary>
+    ///     Chains the current option with another function that returns a new option.
+    /// </summary>
+    /// <typeparam name="TOut">The type of the value in the resulting option.</typeparam>
+    /// <param name="bind">The function to transform the value into another option.</param>
+    /// <returns>The resulting option, or an empty option if the original option is empty.</returns>
+    public async Task<ValueOption<TOut>> BindAsync<TOut>(Func<T, Task<ValueOption<TOut>>> bind) where TOut : struct
+    {
+        return _value.HasValue ? await bind(_value.Value) : ValueOption<TOut>.None();
+    }
+
+    /// <summary>
     ///     Returns the value if present, or the result of the provided value provider function if None.
     /// </summary>
     /// <param name="valueProvider">A function that provides a value if the option is None.</param>

@@ -164,15 +164,25 @@ public class Result
     }
 
     /// <summary>
-    /// Chains the current result with another operation.
+    ///     Chains the current result with another operation.
     /// </summary>
     /// <param name="bind">The function to execute if the current result is successful.</param>
-    /// <returns>The resulting <see cref="Result"/> or propagates the failure.</returns>
+    /// <returns>The resulting <see cref="Result" /> or propagates the failure.</returns>
     public Result Bind(Func<Result> bind)
     {
         return IsSuccess ? bind() : this;
     }
-    
+
+    /// <summary>
+    ///     Chains the current result with an asynchronous operation.
+    /// </summary>
+    /// <param name="bind">The asynchronous function to execute if the current result is successful.</param>
+    /// <returns>A task representing the resulting <see cref="Result" /> or propagates the failure.</returns>
+    public async Task<Result> BindAsync(Func<Task<Result>> bind)
+    {
+        return IsSuccess ? await bind() : this;
+    }
+
     /// <summary>
     ///     Implicitly converts an <see cref="Error" /> to a failed <see cref="Result" />.
     /// </summary>
@@ -231,16 +241,27 @@ public class Result<TValue> : Result
             ? fail(Error)
             : success(Value);
     }
-    
+
     /// <summary>
-    /// Chains the current result with another operation that depends on the value.
+    ///     Chains the current result with another operation that depends on the value.
     /// </summary>
     /// <typeparam name="TNext">The type of the next result's value.</typeparam>
     /// <param name="bind">The function to execute if the current result is successful.</param>
-    /// <returns>The resulting <see cref="Result{TNext}"/> or propagates the failure.</returns>
+    /// <returns>The resulting <see cref="Result{TNext}" /> or propagates the failure.</returns>
     public Result<TNext> Bind<TNext>(Func<TValue, Result<TNext>> bind)
     {
         return IsSuccess ? bind(Value) : Failure<TNext>(Error);
+    }
+
+    /// <summary>
+    ///     Chains the current result with an asynchronous operation that depends on the value.
+    /// </summary>
+    /// <typeparam name="TNext">The type of the next result's value.</typeparam>
+    /// <param name="bind">The asynchronous function to execute if the current result is successful.</param>
+    /// <returns>A task representing the resulting <see cref="Result{TNext}" /> or propagates the failure.</returns>
+    public async Task<Result<TNext>> BindAsync<TNext>(Func<TValue, Task<Result<TNext>>> bind)
+    {
+        return IsSuccess ? await bind(Value) : Failure<TNext>(Error);
     }
 
     /// <summary>

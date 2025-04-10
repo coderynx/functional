@@ -80,7 +80,7 @@ public sealed class ResultTests
         successOutput.Should().Be("Success");
         failureOutput.Should().Be("Failure");
     }
-    
+
     [Fact]
     public void Bind_ShouldReturnNextResult_WhenCurrentResultIsSuccess()
     {
@@ -137,7 +137,66 @@ public sealed class ResultTests
         finalResult.IsSuccess.Should().BeFalse();
         finalResult.Error.Should().Be(initialResult.Error);
     }
-    
+
+    [Fact]
+    public async Task BindAsync_ShouldReturnNextResult_WhenCurrentResultIsSuccess()
+    {
+        // Arrange
+        var initialResult = Result.Success(ResultSuccess.Created);
+
+        // Act
+        var finalResult = await initialResult.BindAsync(() => Task.FromResult(Result.Success(ResultSuccess.Updated)));
+
+        // Assert
+        finalResult.IsSuccess.Should().BeTrue();
+        finalResult.SuccessType.Should().Be(ResultSuccess.Updated);
+    }
+
+    [Fact]
+    public async Task BindAsync_ShouldPropagateFailure_WhenCurrentResultIsFailure()
+    {
+        // Arrange
+        var initialResult = Result.Failure(new Error(ResultError.InvalidInput, "Invalid", "Invalid"));
+
+        // Act
+        var finalResult = await initialResult.BindAsync(() => Task.FromResult(Result.Success(ResultSuccess.Updated)));
+
+        // Assert
+        finalResult.IsSuccess.Should().BeFalse();
+        finalResult.Error.Should().Be(initialResult.Error);
+    }
+
+    [Fact]
+    public async Task BindAsync_WithValue_ShouldReturnNextResult_WhenCurrentResultIsSuccess()
+    {
+        // Arrange
+        var initialResult = Result.Success("InitialValue", ResultSuccess.Created);
+
+        // Act
+        var finalResult = await initialResult.BindAsync(value =>
+            Task.FromResult(Result.Success(value + "Updated", ResultSuccess.Updated)));
+
+        // Assert
+        finalResult.IsSuccess.Should().BeTrue();
+        finalResult.Value.Should().Be("InitialValueUpdated");
+        finalResult.SuccessType.Should().Be(ResultSuccess.Updated);
+    }
+
+    [Fact]
+    public async Task BindAsync_WithValue_ShouldPropagateFailure_WhenCurrentResultIsFailure()
+    {
+        // Arrange
+        var initialResult = Result.Failure<string>(new Error(ResultError.InvalidInput, "Invalid", "Invalid"));
+
+        // Act
+        var finalResult = await initialResult.BindAsync(value =>
+            Task.FromResult(Result.Success(value + "Updated", ResultSuccess.Updated)));
+
+        // Assert
+        finalResult.IsSuccess.Should().BeFalse();
+        finalResult.Error.Should().Be(initialResult.Error);
+    }
+
     [Fact]
     public void ImplicitConversion_ShouldReturnFailureResult()
     {

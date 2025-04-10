@@ -42,6 +42,34 @@ public sealed class ValueOptionTests
     }
 
     [Fact]
+    public async Task BindAsync_ShouldReturnTransformedOption_WhenOptionIsSome()
+    {
+        var option = ValueOption<int>.Some(5);
+
+        var boundOption = await option.BindAsync(async value =>
+        {
+            await Task.Delay(10);
+            return ValueOption<int>.Some(value * 2);
+        });
+
+        boundOption.Match(value => value, () => -1).Should().Be(10);
+    }
+
+    [Fact]
+    public async Task BindAsync_ShouldReturnNone_WhenOptionIsNone()
+    {
+        var option = ValueOption<int>.None();
+
+        var boundOption = await option.BindAsync(async value =>
+        {
+            await Task.Delay(10);
+            return ValueOption<int>.Some(value * 2);
+        });
+
+        boundOption.Match(value => value, () => -1).Should().Be(-1);
+    }
+
+    [Fact]
     public void ValueOr_ShouldReturnValue_WhenOptionIsSome()
     {
         var option = ValueOption<int>.Some(5);
