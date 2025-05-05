@@ -276,15 +276,15 @@ public class Result
     /// <returns>A Result object representing the outcome of the operation.</returns>
     public static async Task<Result> TryCatchAsync(
         Func<Task> onTry,
-        Func<Task<Success>>? onSuccess = null,
-        Func<Exception, Task<Error>>? onCatch = null,
-        Func<Task>? onFinally = null)
+        Func<Success>? onSuccess = null,
+        Func<Exception, Error>? onCatch = null,
+        Action? onFinally = null)
     {
         try
         {
             await onTry();
 
-            var success = onSuccess is not null ? await onSuccess() : Success.Custom();
+            var success = onSuccess?.Invoke() ?? Success.Custom();
             return CreateSuccess(success);
         }
         catch (ErrorException exception)
@@ -293,14 +293,11 @@ public class Result
         }
         catch (Exception exception)
         {
-            return onCatch is not null ? await onCatch(exception) : Error.Unexpected(exception);
+            return onCatch?.Invoke(exception) ?? Error.Unexpected(exception);
         }
         finally
         {
-            if (onFinally is not null)
-            {
-                await onFinally();
-            }
+            onFinally?.Invoke();
         }
     }
 
@@ -360,15 +357,15 @@ public class Result
     /// <returns>A Result object containing the value or an error representing the outcome of the operation.</returns>
     public static async Task<Result<T>> TryCatchAsync<T>(
         Func<Task<T>> onTry,
-        Func<T, Task<Success<T>>>? onSuccess = null,
-        Func<Exception, Task<Error>>? onCatch = null,
-        Func<Task>? onFinally = null)
+        Func<T, Success<T>>? onSuccess = null,
+        Func<Exception, Error>? onCatch = null,
+        Action? onFinally = null)
     {
         try
         {
             var value = await onTry();
 
-            var result = onSuccess != null ? await onSuccess(value) : Success.Custom(value);
+            var result = onSuccess?.Invoke(value) ?? Success.Custom(value);
             return CreateSuccess(result);
         }
         catch (ErrorException exception)
@@ -380,14 +377,11 @@ public class Result
         }
         catch (Exception exception)
         {
-            return onCatch is not null ? await onCatch(exception) : Error.Unexpected(exception);
+            return onCatch?.Invoke(exception) ?? Error.Unexpected(exception);
         }
         finally
         {
-            if (onFinally is not null)
-            {
-                await onFinally();
-            }
+            onFinally?.Invoke();
         }
     }
 

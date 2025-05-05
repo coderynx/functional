@@ -253,11 +253,7 @@ public sealed class ResultTests
                 await Task.Delay(1);
                 throw error;
             },
-            onSuccess: async () =>
-            {
-                await Task.Delay(1);
-                return Success.Custom();
-            }
+            onSuccess: Success.Custom
         );
 
         // Assert
@@ -290,11 +286,7 @@ public sealed class ResultTests
         // Act
         await Result.TryCatchAsync(
             onTry: async () => await Task.CompletedTask,
-            onFinally: async () =>
-            {
-                await Task.Delay(1);
-                finallyCalled = true;
-            }
+            onFinally: () => finallyCalled = true
         );
 
         // Assert
@@ -311,11 +303,7 @@ public sealed class ResultTests
                 await Task.Delay(1);
                 return 1;
             },
-            onSuccess: async value =>
-            {
-                await Task.Delay(1);
-                return Success.Custom(value);
-            }
+            onSuccess: Success.Custom
         );
 
         // Assert
@@ -336,17 +324,8 @@ public sealed class ResultTests
                 await Task.Delay(1);
                 throw error;
             },
-            onSuccess: async value =>
-            {
-                await Task.Delay(1);
-                return Success.Custom(value);
-            },
-            onCatch: async exception =>
-            {
-                await Task.Delay(1);
-                return Error.InvalidInput("E400", exception.Message);
-            }
-        );
+            onSuccess: Success.Custom,
+            onCatch: exception => Error.InvalidInput("E400", exception.Message));
 
         // Assert
         Assert.True(result.IsFailure);
@@ -382,11 +361,7 @@ public sealed class ResultTests
                 await Task.Delay(1);
                 return 42;
             },
-            onFinally: async () =>
-            {
-                await Task.Delay(1);
-                finallyCalled = true;
-            }
+            onFinally: () => finallyCalled = true
         );
 
         // Assert
