@@ -228,4 +228,168 @@ public sealed class ResultTests
         // Assert
         Assert.True(finallyCalled);
     }
+
+    [Fact]
+    public async Task TryCatchAsync_Action_Success()
+    {
+        // Arrange & Act
+        var result = await Result.TryCatchAsync(async () => await Task.CompletedTask);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(SuccessKind.Custom, result.Success.Kind);
+    }
+
+    [Fact]
+    public async Task TryCatchAsync_Action_ErrorException()
+    {
+        // Arrange
+        var error = Error.InvalidInput("E001", "Invalid");
+
+        // Act
+        var result = await Result.TryCatchAsync(
+            onTry: async () =>
+            {
+                await Task.Delay(1);
+                throw error;
+            },
+            onSuccess: async () =>
+            {
+                await Task.Delay(1);
+                return Success.Custom();
+            }
+        );
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(error, result.Error);
+    }
+
+    [Fact]
+    public async Task TryCatchAsync_Action_UnexpectedException()
+    {
+        // Arrange & Act
+        var result = await Result.TryCatchAsync(async () =>
+        {
+            await Task.Delay(1);
+            throw new InvalidOperationException("fail");
+        });
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(ErrorKind.Unexpected, result.Error.Kind);
+        Assert.Contains("fail", result.Error.Message);
+    }
+
+    [Fact]
+    public async Task TryCatchAsync_Action_FinallyActionIsCalled()
+    {
+        // Arrange
+        var finallyCalled = false;
+
+        // Act
+        await Result.TryCatchAsync(
+            onTry: async () => await Task.CompletedTask,
+            onFinally: async () =>
+            {
+                await Task.Delay(1);
+                finallyCalled = true;
+            }
+        );
+
+        // Assert
+        Assert.True(finallyCalled);
+    }
+
+    [Fact]
+    public async Task TryCatchAsync_FuncT_Success()
+    {
+        // Arrange & Act
+        var result = await Result.TryCatchAsync(
+            onTry: async () =>
+            {
+                await Task.Delay(1);
+                return 1;
+            },
+            onSuccess: async value =>
+            {
+                await Task.Delay(1);
+                return Success.Custom(value);
+            }
+        );
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(1, result.Value);
+    }
+
+    [Fact]
+    public async Task TryCatchAsync_FuncT_ErrorException()
+    {
+        // Arrange
+        var error = Error.Conflict("E409", "Conflict");
+
+        // Act
+        var result = await Result.TryCatchAsync<int>(
+            onTry: async () =>
+            {
+                await Task.Delay(1);
+                throw error;
+            },
+            onSuccess: async value =>
+            {
+                await Task.Delay(1);
+                return Success.Custom(value);
+            },
+            onCatch: async exception =>
+            {
+                await Task.Delay(1);
+                return Error.InvalidInput("E400", exception.Message);
+            }
+        );
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(error, result.Error);
+    }
+
+    [Fact]
+    public async Task TryCatchAsync_FuncT_UnexpectedException()
+    {
+        // Arrange & Act
+        var result = await Result.TryCatchAsync<int>(async () =>
+        {
+            await Task.Delay(1);
+            throw new Exception("boom");
+        });
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(ErrorKind.Unexpected, result.Error.Kind);
+        Assert.Contains("boom", result.Error.Message);
+    }
+
+    [Fact]
+    public async Task TryCatchAsync_FuncT_FinallyActionIsCalled()
+    {
+        // Arrange
+        var finallyCalled = false;
+
+        // Act
+        await Result.TryCatchAsync(
+            onTry: async () =>
+            {
+                await Task.Delay(1);
+                return 42;
+            },
+            onFinally: async () =>
+            {
+                await Task.Delay(1);
+                finallyCalled = true;
+            }
+        );
+
+        // Assert
+        Assert.True(finallyCalled);
+    }
 }

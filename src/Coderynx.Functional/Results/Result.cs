@@ -265,6 +265,47 @@ public class Result
     }
 
     /// <summary>
+    /// Executes an asynchronous action within a try-catch block and returns a Result.
+    /// </summary>
+    /// <param name="onTry">The asynchronous action to execute within the try block.</param>
+    /// <param name="onSuccess">Optional function to create a custom Success object when the action succeeds.
+    ///  If not provided, a default Success object is created.</param>
+    /// <param name="onCatch">Optional function to convert exceptions into Error objects.
+    ///  If not provided, exceptions are converted to an Unexpected error.</param>
+    /// <param name="onFinally">Optional action to execute in the finally block.</param>
+    /// <returns>A Result object representing the outcome of the operation.</returns>
+    public static async Task<Result> TryCatchAsync(
+        Func<Task> onTry,
+        Func<Task<Success>>? onSuccess = null,
+        Func<Exception, Task<Error>>? onCatch = null,
+        Func<Task>? onFinally = null)
+    {
+        try
+        {
+            await onTry();
+
+            var success = onSuccess is not null ? await onSuccess() : Success.Custom();
+            return CreateSuccess(success);
+        }
+        catch (ErrorException exception)
+        {
+            return exception.Error;
+        }
+        catch (Exception exception)
+        {
+            return onCatch is not null ? await onCatch(exception) : Error.Unexpected(exception);
+        }
+        finally
+        {
+            if (onFinally is not null)
+            {
+                await onFinally();
+            }
+        }
+    }
+
+
+    /// <summary>
     /// Executes a function within a try-catch block and returns a Result with the function's return value.
     /// </summary>
     /// <typeparam name="T">The type of value returned by the function.</typeparam>
@@ -303,6 +344,50 @@ public class Result
         finally
         {
             onFinally?.Invoke();
+        }
+    }
+
+    /// <summary>
+    /// Executes an asynchronous function within a try-catch block and returns a Result with the function's return value.
+    /// </summary>
+    /// <typeparam name="T">The type of value returned by the function.</typeparam>
+    /// <param name="onTry">The asynchronous function to execute within the try block.</param>
+    /// <param name="onSuccess">Optional function to create a custom Success object with the value when the function succeeds.
+    /// If not provided, a default Success object with the value is created.</param>
+    /// <param name="onCatch">Optional function to convert exceptions into Error objects.
+    /// If not provided, exceptions are converted to an Unexpected error.</param>
+    /// <param name="onFinally">Optional action to execute in the finally block.</param>
+    /// <returns>A Result object containing the value or an error representing the outcome of the operation.</returns>
+    public static async Task<Result<T>> TryCatchAsync<T>(
+        Func<Task<T>> onTry,
+        Func<T, Task<Success<T>>>? onSuccess = null,
+        Func<Exception, Task<Error>>? onCatch = null,
+        Func<Task>? onFinally = null)
+    {
+        try
+        {
+            var value = await onTry();
+
+            var result = onSuccess != null ? await onSuccess(value) : Success.Custom(value);
+            return CreateSuccess(result);
+        }
+        catch (ErrorException exception)
+        {
+            return new Error(
+                kind: exception.Error.Kind,
+                code: exception.Error.Code,
+                message: exception.Error.Message);
+        }
+        catch (Exception exception)
+        {
+            return onCatch is not null ? await onCatch(exception) : Error.Unexpected(exception);
+        }
+        finally
+        {
+            if (onFinally is not null)
+            {
+                await onFinally();
+            }
         }
     }
 
