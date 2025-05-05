@@ -1,4 +1,6 @@
 ﻿using Coderynx.Functional.Results;
+using Coderynx.Functional.Results.Errors;
+using Coderynx.Functional.Results.Successes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using HttpResults = Microsoft.AspNetCore.Http.Results;
@@ -6,43 +8,43 @@ using HttpResults = Microsoft.AspNetCore.Http.Results;
 namespace Coderynx.Functional.WebApi;
 
 /// <summary>
-///     Provides extension methods for converting `Result` objects to HTTP results.
+/// Provides extension methods for converting functional Result objects to ASP.NET Core IResult responses.
 /// </summary>
 public static class ResultExtensions
 {
     /// <summary>
-    ///     Converts a `Result` object to an HTTP result.
+    /// Converts a Result to an appropriate HTTP result.
     /// </summary>
-    /// <param name="result">The `Result` object to convert.</param>
-    /// <returns>An `IResult` representing the HTTP response.</returns>
+    /// <param name="result">The Result to convert.</param>
+    /// <returns>An IResult representing the appropriate HTTP response based on the Result state.</returns>
     public static IResult ToHttpResult(this Result result)
     {
         return ToHttpResultInternal(result, null);
     }
 
     /// <summary>
-    ///     Converts a `Result` object with a value to an HTTP result.
+    /// Converts a Result{TValue} to an appropriate HTTP result, including the contained value if successful.
     /// </summary>
-    /// <typeparam name="TValue">The type of the value contained in the `Result`.</typeparam>
-    /// <param name="result">The `Result` object to convert.</param>
-    /// <returns>An `IResult` representing the HTTP response.</returns>
+    /// <typeparam name="TValue">The type of value contained in the Result.</typeparam>
+    /// <param name="result">The Result{TValue} to convert.</param>
+    /// <returns>An IResult representing the appropriate HTTP response based on the Result state.</returns>
     public static IResult ToHttpResult<TValue>(this Result<TValue> result)
     {
-        return result.HasValue
+        return result.Value is not null
             ? ToHttpResultInternal(result, result.Value)
             : ToHttpResultInternal(result, null);
     }
 
     /// <summary>
-    ///     Converts a `Result` object with a value to an HTTP result, applying a transformation to the value.
+    /// Converts a Result{TValue} to an appropriate HTTP result using a transform function for the value.
     /// </summary>
-    /// <typeparam name="TValue">The type of the value contained in the `Result`.</typeparam>
-    /// <param name="result">The `Result` object to convert.</param>
-    /// <param name="transform">A function to transform the value before converting to an HTTP result.</param>
-    /// <returns>An `IResult` representing the HTTP response.</returns>
+    /// <typeparam name="TValue">The type of value contained in the Result.</typeparam>
+    /// <param name="result">The Result{TValue} to convert.</param>
+    /// <param name="transform">Function to transform the result value to an appropriate response object.</param>
+    /// <returns>An IResult representing the appropriate HTTP response based on the Result state.</returns>
     public static IResult ToHttpResult<TValue>(this Result<TValue> result, Func<TValue, object> transform)
     {
-        if (!result.HasValue)
+        if (result.Value is not null)
         {
             return ToHttpResultInternal(result, null);
         }
@@ -53,22 +55,22 @@ public static class ResultExtensions
     }
 
     /// <summary>
-    ///     Internal method to convert a `Result` object to an HTTP result.
+    /// Internal helper method to convert a Result to an HTTP response.
     /// </summary>
-    /// <param name="result">The `Result` object to convert.</param>
-    /// <param name="value">The value to include in the HTTP response, if applicable.</param>
-    /// <returns>An `IResult` representing the HTTP response.</returns>
+    /// <param name="result">The Result to convert.</param>
+    /// <param name="value">The value to include in the response (if applicable).</param>
+    /// <returns>An appropriate IResult based on the Result's Success or Error state.</returns>
     private static IResult ToHttpResultInternal(Result result, object? value)
     {
         if (result.IsSuccess)
         {
-            return result.SuccessType switch
+            return result.Success.Kind switch
             {
-                ResultSuccess.Created => HttpResults.Ok(value),
-                ResultSuccess.Updated => HttpResults.NoContent(),
-                ResultSuccess.Deleted => HttpResults.NoContent(),
-                ResultSuccess.Found => HttpResults.Ok(value),
-                ResultSuccess.Accepted => HttpResults.Accepted(),
+                SuccessKind.Created => HttpResults.Ok(value),
+                SuccessKind.Updated => HttpResults.NoContent(),
+                SuccessKind.Deleted => HttpResults.NoContent(),
+                SuccessKind.Found => HttpResults.Ok(value),
+                SuccessKind.Accepted => HttpResults.Accepted(),
                 _ => HttpResults.Ok()
             };
         }
@@ -77,27 +79,27 @@ public static class ResultExtensions
     }
 
     /// <summary>
-    ///     Converts a failed `Result` object to a `ProblemDetails` HTTP response.
+    /// Converts a failed Result to a ProblemDetails HTTP response.
     /// </summary>
-    /// <param name="result">The failed `Result` object to convert.</param>
-    /// <returns>An `IResult` representing the HTTP problem response.</returns>
+    /// <param name="result">The Result containing an error.</param>
+    /// <returns>An IResult representing a problem details response based on the error information.</returns>
     private static IResult ToProblem(this Result result)
     {
         var details = new ProblemDetails
         {
-            Type = result.Error.ResultError switch
+            Type = result.Error.Kind switch
             {
-                ResultError.None => "https://tools.ietf.org/html/rfc7231#section-6.5.1",
-                ResultError.NotFound => "https://tools.ietf.org/html/rfc7231#section-6.5.4",
-                ResultError.Conflict => "https://tools.ietf.org/html/rfc7231#section-6.5.8",
+                ErrorKind.None => "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                ErrorKind.NotFound => "https://tools.ietf.org/html/rfc7231#section-6.5.4",
+                ErrorKind.Conflict => "https://tools.ietf.org/html/rfc7231#section-6.5.8",
                 _ => "https://tools.ietf.org/html/rfc7231#section-6.5.1"
             },
             Title = result.Error.Code,
-            Status = result.Error.ResultError switch
+            Status = result.Error.Kind switch
             {
-                ResultError.None => StatusCodes.Status400BadRequest,
-                ResultError.NotFound => StatusCodes.Status404NotFound,
-                ResultError.Conflict => StatusCodes.Status409Conflict,
+                ErrorKind.None => StatusCodes.Status400BadRequest,
+                ErrorKind.NotFound => StatusCodes.Status404NotFound,
+                ErrorKind.Conflict => StatusCodes.Status409Conflict,
                 _ => StatusCodes.Status500InternalServerError
             },
             Detail = result.Error.Message,

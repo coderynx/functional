@@ -1,5 +1,4 @@
 using Coderynx.Functional.Options;
-using FluentAssertions;
 
 namespace Coderynx.Functional.Tests;
 
@@ -8,104 +7,114 @@ public sealed class ValueOptionTests
     [Fact]
     public void Some_ShouldCreateValueOptionWithNonNullValue()
     {
-        var option = ValueOption<int>.Some(5);
+        var option = ValueOption.Some(5);
 
-        option.Match(value => value, () => -1).Should().Be(5);
+        Assert.Equal(5, option.Match(value => value, () => -1));
     }
 
     [Fact]
     public void None_ShouldCreateValueOptionWithNullValue()
     {
-        var option = ValueOption<int>.None();
+        var option = ValueOption.None<int>();
 
-        option.Match(value => value, () => -1).Should().Be(-1);
+        Assert.Equal(-1, option.Match(value => value, () => -1));
     }
 
     [Fact]
     public void Match_ShouldReturnSomeValue_WhenOptionIsSome()
     {
-        var option = ValueOption<int>.Some(5);
+        var option = ValueOption.Some(5);
 
         var result = option.Match(value => value * 2, () => -1);
 
-        result.Should().Be(10);
+        Assert.Equal(10, result);
     }
 
     [Fact]
     public void Match_ShouldReturnNoneValue_WhenOptionIsNone()
     {
-        var option = ValueOption<int>.None();
+        var option = ValueOption.None<int>();
 
         var result = option.Match(value => value * 2, () => -1);
 
-        result.Should().Be(-1);
-    }
-
-    [Fact]
-    public async Task BindAsync_ShouldReturnTransformedOption_WhenOptionIsSome()
-    {
-        var option = ValueOption<int>.Some(5);
-
-        var boundOption = await option.BindAsync(async value =>
-        {
-            await Task.Delay(10);
-            return ValueOption<int>.Some(value * 2);
-        });
-
-        boundOption.Match(value => value, () => -1).Should().Be(10);
-    }
-
-    [Fact]
-    public async Task BindAsync_ShouldReturnNone_WhenOptionIsNone()
-    {
-        var option = ValueOption<int>.None();
-
-        var boundOption = await option.BindAsync(async value =>
-        {
-            await Task.Delay(10);
-            return ValueOption<int>.Some(value * 2);
-        });
-
-        boundOption.Match(value => value, () => -1).Should().Be(-1);
+        Assert.Equal(-1, result);
     }
 
     [Fact]
     public void ValueOr_ShouldReturnValue_WhenOptionIsSome()
     {
-        var option = ValueOption<int>.Some(5);
+        var option = ValueOption.Some(5);
 
         var value = option.ValueOr(() => -1);
 
-        value.Should().Be(5);
+        Assert.Equal(5, value);
     }
 
     [Fact]
     public void ValueOr_ShouldReturnProvidedValue_WhenOptionIsNone()
     {
-        var option = ValueOption<int>.None();
+        var option = ValueOption.None<int>();
 
         var value = option.ValueOr(() => -1);
 
-        value.Should().Be(-1);
+        Assert.Equal(-1, value);
     }
 
     [Fact]
     public void ValueOrNull_ShouldReturnValue_WhenOptionIsSome()
     {
-        var option = ValueOption<int>.Some(5);
+        var option = ValueOption.Some(5);
 
         var value = option.ValueOrNull();
 
-        value.Should().Be(5);
+        Assert.Equal(5, value);
     }
 
     [Fact]
     public void ValueOrNull_ShouldReturnNull_WhenOptionIsNone()
     {
-        var option = ValueOption<int>.None();
+        var option = ValueOption.None<int>();
 
         var value = option.ValueOrNull();
 
-        value.Should().BeNull();
+        Assert.Null(value);
+    }
+
+    [Fact]
+    public void ImplicitOperator_FromNonNullNullable_ShouldCreateSomeOption()
+    {
+        int? value = 5;
+        ValueOption<int> option = value;
+
+        Assert.True(option.IsSome);
+        Assert.Equal(5, option.Match(v => v, () => -1));
+    }
+
+    [Fact]
+    public void ImplicitOperator_FromNullNullable_ShouldCreateNoneOption()
+    {
+        int? value = null;
+        ValueOption<int> option = value;
+
+        Assert.True(option.IsNone);
+        Assert.Equal(-1, option.Match(v => v, () => -1));
+    }
+
+    [Fact]
+    public void ExplicitOperator_FromSomeOption_ShouldReturnNonNullValue()
+    {
+        var option = ValueOption.Some(5);
+        var value = (int?)option;
+
+        Assert.Equal(5, value);
+    }
+
+    [Fact]
+    public void ExplicitOperator_FromNoneOption_ShouldReturnNullValue()
+    {
+        var option = ValueOption.None<int>();
+        var value = (int?)option;
+
+        Assert.Null(value);
     }
 }

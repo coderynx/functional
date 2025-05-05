@@ -1,5 +1,4 @@
 using Coderynx.Functional.Options;
-using FluentAssertions;
 
 namespace Coderynx.Functional.Tests;
 
@@ -8,151 +7,189 @@ public sealed class OptionTests
     [Fact]
     public void Some_ShouldCreateOptionWithNonNullValue()
     {
-        var option = Option<string>.Some("TestValue");
+        var option = Option.Some("TestValue");
 
-        option.IsSome.Should().BeTrue();
-        option.ValueOrThrow().Should().Be("TestValue");
+        Assert.True(option.IsSome);
+        Assert.Equal("TestValue", option.ValueOrThrow());
     }
 
     [Fact]
     public void None_ShouldCreateOptionWithNullValue()
     {
-        var option = Option<string>.None();
+        var option = Option.None<string>();
 
-        option.IsSome.Should().BeFalse();
-        option.Invoking(o => o.ValueOrThrow()).Should().Throw<InvalidOperationException>();
+        Assert.False(option.IsSome);
+        Assert.Throws<InvalidOperationException>(() => option.ValueOrThrow());
     }
 
     [Fact]
     public void Map_ShouldTransformValue_WhenOptionIsSome()
     {
-        var option = Option<string>.Some("TestValue");
+        var option = Option.Some<string>("TestValue");
         var mappedOption = option.Map(value => value.ToUpper());
 
-        mappedOption.IsSome.Should().BeTrue();
-        mappedOption.ValueOrThrow().Should().Be("TESTVALUE");
+        Assert.True(mappedOption.IsSome);
+        Assert.Equal("TESTVALUE", mappedOption.ValueOrThrow());
     }
 
     [Fact]
     public void Map_ShouldReturnNone_WhenOptionIsNone()
     {
-        var option = Option<string>.None();
+        var option = Option.None<string>();
         var mappedOption = option.Map(value => value.ToUpper());
 
-        mappedOption.IsSome.Should().BeFalse();
+        Assert.False(mappedOption.IsSome);
     }
 
     [Fact]
     public void Bind_ShouldReturnTransformedOption_WhenOptionIsSome()
     {
-        var option = Option<string>.Some("TestValue");
-        var boundOption = option.Bind(value => Option<string>.Some(value.Length.ToString()));
+        var option = Option.Some<string>("TestValue");
+        var boundOption = option.Bind(value => Option.Some(value.Length.ToString()));
 
-        boundOption.IsSome.Should().BeTrue();
-        boundOption.ValueOrThrow().Should().Be("9");
+        Assert.True(boundOption.IsSome);
+        Assert.Equal("9", boundOption.ValueOrThrow());
     }
 
     [Fact]
     public void Bind_ShouldReturnNone_WhenOptionIsNone()
     {
-        var option = Option<string>.None();
-        var boundOption = option.Bind(value => Option<string>.Some(value.Length.ToString()));
+        var option = Option.None<string>();
+        var boundOption = option.Bind(value => Option.Some(value.Length.ToString()));
 
-        boundOption.IsSome.Should().BeFalse();
+        Assert.False(boundOption.IsSome);
     }
 
     [Fact]
     public void Match_ShouldReturnCorrectValueBasedOnOption()
     {
-        var someOption = Option<string>.Some("TestValue");
-        var noneOption = Option<string>.None();
+        var someOption = Option.Some("TestValue");
+        var noneOption = Option.None<string>();
 
         var someResult = someOption.Match(value => value.ToUpper(), () => "NONE");
         var noneResult = noneOption.Match(value => value.ToUpper(), () => "NONE");
 
-        someResult.Should().Be("TESTVALUE");
-        noneResult.Should().Be("NONE");
+        Assert.Equal("TESTVALUE", someResult);
+        Assert.Equal("NONE", noneResult);
     }
 
     [Fact]
     public void Filter_ShouldReturnSome_WhenPredicateIsTrue()
     {
-        var option = Option<string>.Some("TestValue");
+        var option = Option.Some<string>("TestValue");
         var filteredOption = option.Filter(value => value.Length > 5);
 
-        filteredOption.IsSome.Should().BeTrue();
-        filteredOption.ValueOrThrow().Should().Be("TestValue");
+        Assert.True(filteredOption.IsSome);
+        Assert.Equal("TestValue", filteredOption.ValueOrThrow());
     }
 
     [Fact]
     public void Filter_ShouldReturnNone_WhenPredicateIsFalse()
     {
-        var option = Option<string>.Some("TestValue");
+        var option = Option.Some<string>("TestValue");
         var filteredOption = option.Filter(value => value.Length < 5);
 
-        filteredOption.IsSome.Should().BeFalse();
+        Assert.False(filteredOption.IsSome);
     }
 
     [Fact]
     public async Task BindAsync_ShouldReturnTransformedOption_WhenOptionIsSome()
     {
-        var option = Option<string>.Some("TestValue");
+        var option = Option.Some<string>("TestValue");
         var boundOption = await option.BindAsync(async value =>
         {
             await Task.Delay(10);
-            return Option<string>.Some(value.ToUpper());
+            return Option.Some(value.ToUpper());
         });
 
-        boundOption.IsSome.Should().BeTrue();
-        boundOption.ValueOrThrow().Should().Be("TESTVALUE");
+        Assert.True(boundOption.IsSome);
+        Assert.Equal("TESTVALUE", boundOption.ValueOrThrow());
     }
 
     [Fact]
     public async Task BindAsync_ShouldReturnNone_WhenOptionIsNone()
     {
-        var option = Option<string>.None();
+        var option = Option.None<string>();
         var boundOption = await option.BindAsync(async value =>
         {
             await Task.Delay(10);
-            return Option<string>.Some(value.ToUpper());
+            return Option.Some(value.ToUpper());
         });
 
-        boundOption.IsSome.Should().BeFalse();
+        Assert.False(boundOption.IsSome);
     }
 
     [Fact]
     public void ValueOr_ShouldReturnValue_WhenOptionIsSome()
     {
-        var option = Option<string>.Some("TestValue");
+        var option = Option.Some<string>("TestValue");
         var value = option.ValueOr(() => "DefaultValue");
 
-        value.Should().Be("TestValue");
+        Assert.Equal("TestValue", value);
     }
 
     [Fact]
     public void ValueOr_ShouldReturnDefaultValue_WhenOptionIsNone()
     {
-        var option = Option<string>.None();
+        var option = Option.None<string>();
         var value = option.ValueOr(() => "DefaultValue");
 
-        value.Should().Be("DefaultValue");
+        Assert.Equal("DefaultValue", value);
     }
 
     [Fact]
     public void ValueOrNull_ShouldReturnValue_WhenOptionIsSome()
     {
-        var option = Option<string>.Some("TestValue");
+        var option = Option.Some<string>("TestValue");
         var value = option.ValueOrNull();
 
-        value.Should().Be("TestValue");
+        Assert.Equal("TestValue", value);
     }
 
     [Fact]
     public void ValueOrNull_ShouldReturnNull_WhenOptionIsNone()
     {
-        var option = Option<string>.None();
+        var option = Option.None<string>();
         var value = option.ValueOrNull();
 
-        value.Should().BeNull();
+        Assert.Null(value);
+    }
+
+    [Fact]
+    public void ImplicitOperator_FromNonNullValue_ShouldCreateSomeOption()
+    {
+        var value = "TestValue";
+        Option<string> option = value;
+
+        Assert.True(option.IsSome);
+        Assert.Equal("TestValue", option.ValueOrThrow());
+    }
+
+    [Fact]
+    public void ImplicitOperator_FromNullValue_ShouldCreateNoneOption()
+    {
+        string? value = null;
+        Option<string> option = value;
+
+        Assert.True(option.IsNone);
+        Assert.Throws<InvalidOperationException>(() => option.ValueOrThrow());
+    }
+
+    [Fact]
+    public void ExplicitOperator_FromSomeOption_ShouldReturnNonNullValue()
+    {
+        var option = Option.Some<string>("TestValue");
+        var value = (string?)option;
+
+        Assert.Equal("TestValue", value);
+    }
+
+    [Fact]
+    public void ExplicitOperator_FromNoneOption_ShouldReturnNullValue()
+    {
+        var option = Option.None<string>();
+        var value = (string?)option;
+
+        Assert.Null(value);
     }
 }

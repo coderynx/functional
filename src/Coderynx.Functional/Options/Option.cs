@@ -1,110 +1,111 @@
 ﻿namespace Coderynx.Functional.Options;
 
 /// <summary>
-///     Represents an optional value that may or may not contain a value of type <typeparamref name="T" />.
+/// Provides a base class for implementing the Option monad pattern,
+/// representing a container that may or may not contain a value.
 /// </summary>
-/// <typeparam name="T">The type of the value contained in the option. Must be a reference type.</typeparam>
-public sealed class Option<T> where T : class
+public abstract class Option
 {
-    private readonly T? _value;
-
     /// <summary>
-    ///     Private constructor to initialize the option with a value or null.
+    /// Creates an Option containing a value.
     /// </summary>
-    /// <param name="value">The value to store, or null if the option is empty.</param>
-    private Option(T? value)
-    {
-        _value = value;
-    }
-
-    /// <summary>
-    ///     Indicates whether the option contains a value.
-    /// </summary>
-    public bool IsSome => _value is not null;
-
-    /// <summary>
-    ///     Creates an option containing a value.
-    /// </summary>
-    /// <param name="value">The value to store in the option.</param>
-    /// <returns>An option containing the specified value.</returns>
-    public static Option<T> Some(T value)
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="value">The value to wrap in an Option.</param>
+    /// <returns>An Option containing the provided value.</returns>
+    public static Option<T> Some<T>(T value) where T : class
     {
         return new Option<T>(value);
     }
 
     /// <summary>
-    ///     Creates an empty option.
+    /// Creates an empty Option (None).
     /// </summary>
-    /// <returns>An empty option.</returns>
-    public static Option<T> None()
+    /// <typeparam name="T">The type parameter for the Option.</typeparam>
+    /// <returns>An empty Option of the specified type.</returns>
+    public static Option<T> None<T>() where T : class
     {
         return new Option<T>(null);
     }
+}
+
+/// <summary>
+/// Represents an Option that may contain a value of type T or no value (None).
+/// This is a type-safe alternative to using null references.
+/// </summary>
+/// <typeparam name="T">The type of the contained value.</typeparam>
+public sealed class Option<T> : Option where T : class
+{
+    private readonly T? _value;
 
     /// <summary>
-    ///     Transforms the value inside the option using the specified mapping function.
+    /// Initializes a new instance of the Option class.
     /// </summary>
-    /// <typeparam name="TOut">The type of the transformed value.</typeparam>
-    /// <param name="map">The function to transform the value.</param>
-    /// <returns>An option containing the transformed value, or an empty option if the original option is empty.</returns>
+    /// <param name="value">The value to be contained in this Option.</param>
+    internal Option(T? value)
+    {
+        _value = value;
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether this Option contains a value.
+    /// </summary>
+    public bool IsSome => _value is not null;
+
+    /// <summary>
+    /// Gets a value indicating whether this Option does not contain a value.
+    /// </summary>
+    public bool IsNone => !IsSome;
+
+    /// <summary>
+    /// Transforms the value in this Option using the provided mapping function.
+    /// </summary>
+    /// <typeparam name="TOut">The type of the output value.</typeparam>
+    /// <param name="map">The function to apply to the contained value.</param>
+    /// <returns>A new Option containing the transformed value, or None if this Option is None.</returns>
     public Option<TOut> Map<TOut>(Func<T, TOut> map) where TOut : class
     {
-        return _value is not null ? Option<TOut>.Some(map(_value)) : Option<TOut>.None();
+        return _value is not null ? Some(map(_value)) : None<TOut>();
     }
 
     /// <summary>
-    ///     Transforms the value inside the option into a value type using the specified mapping function.
+    /// Transforms the value in this Option to a value type using the provided mapping function.
     /// </summary>
-    /// <typeparam name="TOut">The value type of the transformed value.</typeparam>
-    /// <param name="map">The function to transform the value.</param>
-    /// <returns>
-    ///     A <see cref="ValueOption{TOut}" /> containing the transformed value, or an empty option if the original option
-    ///     is empty.
-    /// </returns>
+    /// <typeparam name="TOut">The value type of the output.</typeparam>
+    /// <param name="map">The function to apply to the contained value.</param>
+    /// <returns>A new ValueOption containing the transformed value, or None if this Option is None.</returns>
     public ValueOption<TOut> MapValue<TOut>(Func<T, TOut> map) where TOut : struct
     {
-        return _value is not null ? ValueOption<TOut>.Some(map(_value)) : ValueOption<TOut>.None();
+        return _value is not null ? ValueOption.Some(map(_value)) : ValueOption.None<TOut>();
     }
 
     /// <summary>
-    ///     Transforms the value inside the option into another option using the specified binding function.
+    /// Chains together multiple operations that return Options.
     /// </summary>
-    /// <typeparam name="TOut">The type of the value in the resulting option.</typeparam>
-    /// <param name="bind">The function to transform the value into another option.</param>
-    /// <returns>The resulting option, or an empty option if the original option is empty.</returns>
+    /// <typeparam name="TOut">The type of the output Option.</typeparam>
+    /// <param name="bind">The function to apply to the contained value.</param>
+    /// <returns>The result of applying the function to the contained value, or None if this Option is None.</returns>
     public Option<TOut> Bind<TOut>(Func<T, Option<TOut>> bind) where TOut : class
     {
-        return _value is not null ? bind(_value) : Option<TOut>.None();
+        return _value is not null ? bind(_value) : None<TOut>();
     }
 
     /// <summary>
-    ///     Transforms the value inside the option into another option using the specified binding function asynchronously.
+    /// Applies one of two functions based on whether this Option contains a value.
     /// </summary>
-    /// <typeparam name="TOut">The type of the value in the resulting option.</typeparam>
-    /// <param name="bind">The function to transform the value into another option.</param>
-    /// <returns>The resulting option, or an empty option if the original option is empty.</returns>
-    public async Task<Option<TOut>> BindAsync<TOut>(Func<T, Task<Option<TOut>>> bind) where TOut : class
-    {
-        return _value is not null ? await bind(_value) : Option<TOut>.None();
-    }
-
-    /// <summary>
-    ///     Matches the option to one of two functions based on whether it contains a value.
-    /// </summary>
-    /// <typeparam name="TOut">The return type of the match functions.</typeparam>
-    /// <param name="some">The function to execute if the option contains a value.</param>
-    /// <param name="none">The function to execute if the option is empty.</param>
-    /// <returns>The result of the executed function.</returns>
+    /// <typeparam name="TOut">The return type of both functions.</typeparam>
+    /// <param name="some">The function to apply if this Option contains a value.</param>
+    /// <param name="none">The function to apply if this Option is None.</param>
+    /// <returns>The result of the applied function.</returns>
     public TOut Match<TOut>(Func<T, TOut> some, Func<TOut> none)
     {
         return _value is not null ? some(_value) : none();
     }
 
     /// <summary>
-    ///     Matches the option to one of two actions based on whether it contains a value.
+    /// Performs one of two actions based on whether this Option contains a value.
     /// </summary>
-    /// <param name="some">The action to execute if the option contains a value.</param>
-    /// <param name="none">The action to execute if the option is empty.</param>
+    /// <param name="some">The action to perform if this Option contains a value.</param>
+    /// <param name="none">The action to perform if this Option is None.</param>
     public void Match(Action<T> some, Action none)
     {
         if (_value is not null)
@@ -118,41 +119,61 @@ public sealed class Option<T> where T : class
     }
 
     /// <summary>
-    ///     Filters the option based on a predicate function.
+    /// Applies a predicate to the contained value and returns an Option based on the result.
     /// </summary>
-    /// <param name="filter">The predicate function to test the value.</param>
-    /// <returns>The original option if the predicate is true, or an empty option otherwise.</returns>
+    /// <param name="filter">The predicate to apply to the value.</param>
+    /// <returns>This Option if it contains a value that satisfies the predicate; otherwise, None.</returns>
     public Option<T> Filter(Func<T, bool> filter)
     {
-        return _value is not null && filter(_value) ? Some(_value) : None();
+        return _value is not null && filter(_value) ? Some(_value) : None<T>();
     }
 
     /// <summary>
-    ///     Retrieves the value inside the option or throws an exception if the option is empty.
+    /// Returns the contained value or throws an exception if this Option is None.
     /// </summary>
-    /// <returns>The value inside the option.</returns>
-    /// <exception cref="InvalidOperationException">Thrown if the option is empty.</exception>
+    /// <returns>The contained value.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the Option is None.</exception>
     public T ValueOrThrow()
     {
         return _value ?? throw new InvalidOperationException("The value not present");
     }
 
     /// <summary>
-    ///     Retrieves the value inside the option or provides a fallback value using a function if the option is empty.
+    /// Returns the contained value or a default value provided by the given function.
     /// </summary>
-    /// <param name="valueProvider">The function to provide a fallback value.</param>
-    /// <returns>The value inside the option, or the fallback value.</returns>
+    /// <param name="valueProvider">The function that provides a default value.</param>
+    /// <returns>The contained value if present; otherwise, the result of the valueProvider function.</returns>
     public T ValueOr(Func<T> valueProvider)
     {
         return _value ?? valueProvider();
     }
 
     /// <summary>
-    ///     Retrieves the value inside the option or null if the option is empty.
+    /// Returns the contained value or null if this Option is None.
     /// </summary>
-    /// <returns>The value inside the option, or null.</returns>
+    /// <returns>The contained value or null.</returns>
     public T? ValueOrNull()
     {
         return _value;
+    }
+
+    /// <summary>
+    /// Implicitly converts a value to an Option.
+    /// </summary>
+    /// <param name="value">The value to convert.</param>
+    /// <returns>An Option containing the value, or None if the value is null.</returns>
+    public static implicit operator Option<T>(T? value)
+    {
+        return value is not null ? Some(value) : None<T>();
+    }
+
+    /// <summary>
+    /// Explicitly converts an Option to its contained value or null.
+    /// </summary>
+    /// <param name="option">The Option to convert.</param>
+    /// <returns>The contained value or null if the Option is None.</returns>
+    public static explicit operator T?(Option<T> option)
+    {
+        return option.IsSome ? option.ValueOrThrow() : null;
     }
 }

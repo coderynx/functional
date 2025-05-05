@@ -1,14 +1,19 @@
-﻿namespace Coderynx.Functional.Results;
+﻿namespace Coderynx.Functional.Results.Errors;
 
 /// <summary>
 ///     Represents the possible error types for a result in the functional programming paradigm.
 /// </summary>
-public enum ResultError
+public enum ErrorKind
 {
     /// <summary>
     ///     Indicates that no error occurred.
     /// </summary>
     None,
+
+    /// <summary>
+    ///     Indicates that the operation was successful.
+    /// </summary>
+    Unexpected,
 
     /// <summary>
     ///     Indicates that the requested resource was not found.
@@ -26,12 +31,12 @@ public enum ResultError
     InvalidInput,
 
     /// <summary>
-    ///     Represents a custom error type defined by the user.
-    /// </summary>
-    Custom,
-
-    /// <summary>
     ///     Indicates that an invalid operation was attempted.
     /// </summary>
-    InvalidOperation
+    InvalidOperation,
+
+    /// <summary>
+    ///     Represents a custom error type defined by the user.
+    /// </summary>
+    Custom
 }

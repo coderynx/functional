@@ -1,10 +1,15 @@
-﻿namespace Coderynx.Functional.Results;
+﻿namespace Coderynx.Functional.Results.Successes;
 
 /// <summary>
 ///     Represents the success states of a result operation.
 /// </summary>
-public enum ResultSuccess
+public enum SuccessKind
 {
+    /// <summary>
+    ///     Indicates that no success state is defined.
+    /// </summary>
+    None,
+
     /// <summary>
     ///     Indicates that the requested resource was found.
     /// </summary>
@@ -28,5 +33,10 @@ public enum ResultSuccess
     /// <summary>
     ///     Indicates that the operation was accepted for processing.
     /// </summary>
-    Accepted
+    Accepted,
+
+    /// <summary>
+    ///     Indicates that the operation was successful.
+    /// </summary>
+    Custom
 }

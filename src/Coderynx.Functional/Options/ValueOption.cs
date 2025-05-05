@@ -1,81 +1,115 @@
 ﻿namespace Coderynx.Functional.Options;
 
 /// <summary>
-///     Represents an optional value that can either contain a value of type <typeparamref name="T" /> or be empty (None).
-///     This struct is designed for value types (struct).
+/// Provides factory methods for creating <see cref="ValueOption{T}"/> instances.
 /// </summary>
-/// <typeparam name="T">The type of the value.</typeparam>
-public readonly struct ValueOption<T> where T : struct
+public static class ValueOption
 {
-    private readonly T? _value;
-
     /// <summary>
-    ///     Initializes a new instance of the <see cref="ValueOption{T}" /> struct.
+    /// Creates a <see cref="ValueOption{T}"/> instance containing the specified value.
     /// </summary>
-    /// <param name="value">The value to wrap, or null to represent None.</param>
-    private ValueOption(T? value)
-    {
-        _value = value;
-    }
-
-    /// <summary>
-    ///     Creates a <see cref="ValueOption{T}" /> that contains a value.
-    /// </summary>
+    /// <typeparam name="T">The type of the value to wrap, must be a value type.</typeparam>
     /// <param name="value">The value to wrap.</param>
-    /// <returns>A <see cref="ValueOption{T}" /> containing the specified value.</returns>
-    public static ValueOption<T> Some(T value)
+    /// <returns>A <see cref="ValueOption{T}"/> containing the value.</returns>
+    public static ValueOption<T> Some<T>(T value) where T : struct
     {
         return new ValueOption<T>(value);
     }
 
     /// <summary>
-    ///     Creates a <see cref="ValueOption{T}" /> that represents None (no value).
+    /// Creates an empty <see cref="ValueOption{T}"/> instance.
     /// </summary>
-    /// <returns>A <see cref="ValueOption{T}" /> representing None.</returns>
-    public static ValueOption<T> None()
+    /// <typeparam name="T">The type parameter for the option, must be a value type.</typeparam>
+    /// <returns>An empty <see cref="ValueOption{T}"/>.</returns>
+    public static ValueOption<T> None<T>() where T : struct
     {
         return new ValueOption<T>(null);
     }
+}
+
+/// <summary>
+/// Represents an optional value of type <typeparamref name="T"/>.
+/// This is a value type equivalent of Option, specifically designed for value types.
+/// </summary>
+/// <typeparam name="T">The type of the optional value, must be a value type.</typeparam>
+public readonly struct ValueOption<T> where T : struct
+{
+    private readonly T? _value;
 
     /// <summary>
-    ///     Matches the current state of the option and executes the corresponding function.
+    /// Gets a value indicating whether this instance contains a value.
     /// </summary>
-    /// <typeparam name="TOut">The return type of the match functions.</typeparam>
-    /// <param name="some">The function to execute if the option contains a value.</param>
-    /// <param name="none">The function to execute if the option represents None.</param>
-    /// <returns>The result of the executed function.</returns>
+    public bool IsSome => _value.HasValue;
+
+    /// <summary>
+    /// Gets a value indicating whether this instance does not contain a value.
+    /// </summary>
+    public bool IsNone => !IsSome;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ValueOption{T}"/> struct.
+    /// </summary>
+    /// <param name="value">The nullable value to wrap.</param>
+    internal ValueOption(T? value)
+    {
+        _value = value;
+    }
+
+    /// <summary>
+    /// Applies one of the provided functions based on whether this instance contains a value.
+    /// </summary>
+    /// <typeparam name="TOut">The type of the return value.</typeparam>
+    /// <param name="some">The function to apply if a value is present.</param>
+    /// <param name="none">The function to apply if no value is present.</param>
+    /// <returns>
+    /// The result of applying <paramref name="some"/> to the contained value if present;
+    /// otherwise, the result of the <paramref name="none"/> function.
+    /// </returns>
     public TOut Match<TOut>(Func<T, TOut> some, Func<TOut> none)
     {
-        return _value.HasValue ? some(_value.Value) : none();
+        return _value.HasValue
+            ? some(_value.Value)
+            : none();
     }
 
     /// <summary>
-    ///     Chains the current option with another function that returns a new option.
+    /// Returns the contained value if present; otherwise, returns the result of the provided function.
     /// </summary>
-    /// <typeparam name="TOut">The type of the value in the resulting option.</typeparam>
-    /// <param name="bind">The function to transform the value into another option.</param>
-    /// <returns>The resulting option, or an empty option if the original option is empty.</returns>
-    public async Task<ValueOption<TOut>> BindAsync<TOut>(Func<T, Task<ValueOption<TOut>>> bind) where TOut : struct
-    {
-        return _value.HasValue ? await bind(_value.Value) : ValueOption<TOut>.None();
-    }
-
-    /// <summary>
-    ///     Returns the value if present, or the result of the provided value provider function if None.
-    /// </summary>
-    /// <param name="valueProvider">A function that provides a value if the option is None.</param>
-    /// <returns>The value of the option, or the result of the value provider function.</returns>
+    /// <param name="valueProvider">A function that provides a default value when no value is present.</param>
+    /// <returns>The contained value if present; otherwise, the result of <paramref name="valueProvider"/>.</returns>
     public T ValueOr(Func<T> valueProvider)
     {
         return _value ?? valueProvider();
     }
 
     /// <summary>
-    ///     Returns the value if present, or null if None.
+    /// Returns the contained value as a nullable type.
     /// </summary>
-    /// <returns>The value of the option, or null if None.</returns>
+    /// <returns>The contained value if present; otherwise, null.</returns>
     public T? ValueOrNull()
     {
         return _value;
+    }
+
+    /// <summary>
+    /// Implicitly converts a nullable value to a <see cref="ValueOption{T}"/>.
+    /// </summary>
+    /// <param name="value">The nullable value to convert.</param>
+    public static implicit operator ValueOption<T>(T? value)
+    {
+        return value.HasValue
+            ? ValueOption.Some(value.Value)
+            : ValueOption.None<T>();
+    }
+
+    /// <summary>
+    /// Explicitly converts a <see cref="ValueOption{T}"/> to a nullable value.
+    /// </summary>
+    /// <param name="option">The option to convert.</param>
+    public static explicit operator T?(ValueOption<T> option)
+    {
+        return option.IsSome
+            ? option._value
+            : null;
     }
 }

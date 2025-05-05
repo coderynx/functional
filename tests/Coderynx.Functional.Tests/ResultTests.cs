@@ -1,213 +1,231 @@
 using Coderynx.Functional.Results;
-using FluentAssertions;
+using Coderynx.Functional.Results.Errors;
+using Coderynx.Functional.Results.Successes;
 
 namespace Coderynx.Functional.Tests;
 
 public sealed class ResultTests
 {
-    private static Error TestError => new(ResultError.InvalidInput, nameof(TestError), nameof(TestError));
-
     [Fact]
-    public void SuccessResult_ShouldHaveNoError()
+    public void Found_ReturnsSuccessResultWithFoundKind()
     {
-        // Arrange
-        var expectedError = Error.None;
-
-        // Act
-        var result = Result.Success(ResultSuccess.Created);
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Error.Should().Be(expectedError);
+        var result = Result.Found();
+        Assert.True(result.IsSuccess);
+        Assert.Equal(SuccessKind.Found, result.Success.Kind);
     }
 
     [Fact]
-    public void FailureResult_ShouldHaveError()
+    public void Found_ReturnsSuccessValuedResultWithFoundKind()
     {
-        // Arrange
-        var expectedError = TestError;
-
-        // Act
-        var result = Result.Failure(expectedError);
+        // Arrange & Act
+        var valueResult = Result.Found(123);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().Be(expectedError);
+        Assert.True(valueResult.IsSuccess);
+        Assert.Equal(SuccessKind.Found, ((Result)valueResult).Success.Kind);
+        Assert.Equal(123, valueResult.Value);
     }
 
     [Fact]
-    public void SuccessResultWithValue_ShouldHaveValue()
+    public void Updated_ReturnsSuccessResultWithUpdatedKind()
     {
-        // Arrange
-        const string expectedValue = "TestValue";
-
-        // Act
-        var result = Result.Success(expectedValue, ResultSuccess.Created);
+        // Arrange & Act
+        var result = Result.Updated();
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.HasValue.Should().BeTrue();
-        result.Value.Should().Be(expectedValue);
+        Assert.True(result.IsSuccess);
+        Assert.Equal(SuccessKind.Updated, result.Success.Kind);
     }
 
     [Fact]
-    public void FailureResultWithValue_ShouldNotHaveValue()
+    public void Updated_ReturnsSuccessValuedResultWithUpdatedKind()
     {
-        // Arrange
-        var expectedError = TestError;
-
-        // Act
-        var result = Result.Failure<string>(expectedError);
+        // Arrange & Act
+        var result = Result.Updated("value");
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.HasValue.Should().BeFalse();
-        result.Invoking(r => r.Value).Should().Throw<InvalidOperationException>();
+        Assert.True(result.IsSuccess);
+        Assert.Equal(SuccessKind.Updated, ((Result)result).Success.Kind);
+        Assert.Equal("value", result.Value);
     }
 
     [Fact]
-    public void Match_ShouldReturnCorrectOutputBasedOnResult()
+    public void Deleted_ReturnsSuccessResultWithDeletedKind()
     {
-        // Arrange
-        var successResult = Result.Created("TestValue");
-        var failureResult = Result.Failure<string>(TestError);
-
-        // Act
-        var successOutput = successResult.Match(() => "Success", _ => "Failure");
-        var failureOutput = failureResult.Match(() => "Success", _ => "Failure");
+        // Arrange & Act
+        var result = Result.Deleted();
 
         // Assert
-        successOutput.Should().Be("Success");
-        failureOutput.Should().Be("Failure");
+        Assert.True(result.IsSuccess);
+        Assert.Equal(SuccessKind.Deleted, result.Success.Kind);
     }
 
     [Fact]
-    public void Bind_ShouldReturnNextResult_WhenCurrentResultIsSuccess()
+    public void Deleted_ReturnsSuccessValuedResultWithDeletedKind()
     {
-        // Arrange
-        var initialResult = Result.Success(ResultSuccess.Created);
-
-        // Act
-        var finalResult = initialResult.Bind(() => Result.Success(ResultSuccess.Updated));
+        // Arrange & Act
+        var result = Result.Deleted("value");
 
         // Assert
-        finalResult.IsSuccess.Should().BeTrue();
-        finalResult.SuccessType.Should().Be(ResultSuccess.Updated);
+        Assert.True(result.IsSuccess);
+        Assert.Equal(SuccessKind.Deleted, ((Result)result).Success.Kind);
+        Assert.Equal("value", result.Value);
     }
 
     [Fact]
-    public void Bind_ShouldPropagateFailure_WhenCurrentResultIsFailure()
+    public void Accepted_ReturnsSuccessResultWithAcceptedKind()
     {
-        // Arrange
-        var initialResult = Result.Failure(new Error(ResultError.InvalidInput, "Invalid", "Invalid"));
-
-        // Act
-        var finalResult = initialResult.Bind(() => Result.Success(ResultSuccess.Updated));
+        // Arrange & Act
+        var result = Result.Accepted();
 
         // Assert
-        finalResult.IsSuccess.Should().BeFalse();
-        finalResult.Error.Should().Be(initialResult.Error);
+        Assert.True(result.IsSuccess);
+        Assert.Equal(SuccessKind.Accepted, result.Success.Kind);
     }
 
     [Fact]
-    public void Bind_WithValue_ShouldReturnNextResult_WhenCurrentResultIsSuccess()
+    public void Accepted_ReturnsSuccessValuedResultWithAcceptedKind()
     {
-        // Arrange
-        var initialResult = Result.Success("InitialValue", ResultSuccess.Created);
-
-        // Act
-        var finalResult = initialResult.Bind(value => Result.Success(value + "Updated", ResultSuccess.Updated));
+        // Arrange & Act
+        var result = Result.Accepted("value");
 
         // Assert
-        finalResult.IsSuccess.Should().BeTrue();
-        finalResult.Value.Should().Be("InitialValueUpdated");
-        finalResult.SuccessType.Should().Be(ResultSuccess.Updated);
+        Assert.True(result.IsSuccess);
+        Assert.Equal(SuccessKind.Accepted, ((Result)result).Success.Kind);
+        Assert.Equal("value", result.Value);
     }
 
     [Fact]
-    public void Bind_WithValue_ShouldPropagateFailure_WhenCurrentResultIsFailure()
+    public void Created_ReturnsSuccessResultWithCreatedKind()
     {
-        // Arrange
-        var initialResult = Result.Failure<string>(new Error(ResultError.InvalidInput, "Invalid", "Invalid"));
-
-        // Act
-        var finalResult = initialResult.Bind(value => Result.Success(value + "Updated", ResultSuccess.Updated));
+        // Arrange & Act
+        var result = Result.Created();
 
         // Assert
-        finalResult.IsSuccess.Should().BeFalse();
-        finalResult.Error.Should().Be(initialResult.Error);
+        Assert.True(result.IsSuccess);
+        Assert.Equal(SuccessKind.Created, result.Success.Kind);
     }
 
     [Fact]
-    public async Task BindAsync_ShouldReturnNextResult_WhenCurrentResultIsSuccess()
+    public void Created_ReturnsSuccessValuedResultWithCreatedKind()
     {
-        // Arrange
-        var initialResult = Result.Success(ResultSuccess.Created);
-
-        // Act
-        var finalResult = await initialResult.BindAsync(() => Task.FromResult(Result.Success(ResultSuccess.Updated)));
+        // Arrange & Act
+        var result = Result.Created("new");
 
         // Assert
-        finalResult.IsSuccess.Should().BeTrue();
-        finalResult.SuccessType.Should().Be(ResultSuccess.Updated);
+        Assert.True(result.IsSuccess);
+        Assert.Equal(SuccessKind.Created, ((Result)result).Success.Kind);
+        Assert.Equal("new", result.Value);
     }
 
     [Fact]
-    public async Task BindAsync_ShouldPropagateFailure_WhenCurrentResultIsFailure()
+    public void TryCatch_Action_Success()
     {
-        // Arrange
-        var initialResult = Result.Failure(new Error(ResultError.InvalidInput, "Invalid", "Invalid"));
-
-        // Act
-        var finalResult = await initialResult.BindAsync(() => Task.FromResult(Result.Success(ResultSuccess.Updated)));
+        // Arrange & Act
+        var result = Result.TryCatch(() => { });
 
         // Assert
-        finalResult.IsSuccess.Should().BeFalse();
-        finalResult.Error.Should().Be(initialResult.Error);
+        Assert.True(result.IsSuccess);
+        Assert.Equal(SuccessKind.Custom, result.Success.Kind);
     }
 
     [Fact]
-    public async Task BindAsync_WithValue_ShouldReturnNextResult_WhenCurrentResultIsSuccess()
+    public void TryCatch_Action_ErrorException()
     {
         // Arrange
-        var initialResult = Result.Success("InitialValue", ResultSuccess.Created);
+        var error = Error.InvalidInput("E001", "Invalid");
 
         // Act
-        var finalResult = await initialResult.BindAsync(value =>
-            Task.FromResult(Result.Success(value + "Updated", ResultSuccess.Updated)));
+        var result = Result.TryCatch(
+            onTry: () => throw error,
+            onSuccess: Success.Custom
+        );
 
         // Assert
-        finalResult.IsSuccess.Should().BeTrue();
-        finalResult.Value.Should().Be("InitialValueUpdated");
-        finalResult.SuccessType.Should().Be(ResultSuccess.Updated);
+        Assert.True(result.IsFailure);
+        Assert.Equal(error, result.Error);
     }
 
     [Fact]
-    public async Task BindAsync_WithValue_ShouldPropagateFailure_WhenCurrentResultIsFailure()
+    public void TryCatch_Action_UnexpectedException()
     {
-        // Arrange
-        var initialResult = Result.Failure<string>(new Error(ResultError.InvalidInput, "Invalid", "Invalid"));
-
-        // Act
-        var finalResult = await initialResult.BindAsync(value =>
-            Task.FromResult(Result.Success(value + "Updated", ResultSuccess.Updated)));
+        // Arrange & Act
+        var result = Result.TryCatch(() => throw new InvalidOperationException("fail"));
 
         // Assert
-        finalResult.IsSuccess.Should().BeFalse();
-        finalResult.Error.Should().Be(initialResult.Error);
+        Assert.True(result.IsFailure);
+        Assert.Equal(ErrorKind.Unexpected, result.Error.Kind);
+        Assert.Contains("fail", result.Error.Message);
     }
 
     [Fact]
-    public void ImplicitConversion_ShouldReturnFailureResult()
+    public void TryCatch_Action_FinallyActionIsCalled()
     {
         // Arrange
-        var expectedError = TestError;
+        var finallyCalled = false;
 
         // Act
-        Result result = expectedError;
+        Result.TryCatch(() => { }, onFinally: () => finallyCalled = true);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().Be(expectedError);
+        Assert.True(finallyCalled);
+    }
+
+    [Fact]
+    public void TryCatch_FuncT_Success()
+    {
+        // Arrange & Act
+        var result = Result.TryCatch(
+            onTry: int () => 1,
+            onSuccess: Success.Custom
+        );
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(1, result.Value);
+    }
+
+    [Fact]
+    public void TryCatch_FuncT_ErrorException()
+    {
+        // Arrange
+        var error = Error.Conflict("E409", "Conflict");
+
+        // Act
+        var result = Result.TryCatch(
+            onTry: int () => throw error,
+            onSuccess: Success.Custom,
+            onCatch: exception => Error.InvalidInput("E400", exception.Message));
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(error, result.Error);
+    }
+
+    [Fact]
+    public void TryCatch_FuncT_UnexpectedException()
+    {
+        // Arrange & Act
+        var result = Result.TryCatch(() => throw new Exception("boom"));
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(ErrorKind.Unexpected, result.Error.Kind);
+        Assert.Contains("boom", result.Error.Message);
+    }
+
+    [Fact]
+    public void TryCatch_FuncT_FinallyActionIsCalled()
+    {
+        // Arrange
+        var finallyCalled = false;
+
+        // Act
+        Result.TryCatch(
+            onTry: () => { },
+            onFinally: () => finallyCalled = true);
+
+        // Assert
+        Assert.True(finallyCalled);
     }
 }
