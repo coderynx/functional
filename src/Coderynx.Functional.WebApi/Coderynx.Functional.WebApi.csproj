@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageId>Coderynx.Functional.WebApi</PackageId>
-        <Version>1.3.4</Version>
+        <Version>1.3.5</Version>
         <Authors>coderynx</Authors>
         <Description>Functional library extensions for WebApi</Description>
         <PackageTags>functional</PackageTags>
@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Coderynx.Functional" Version="1.4.2" />
+        <PackageReference Include="Coderynx.Functional" Version="1.4.4" />
     </ItemGroup>
 
 </Project>
