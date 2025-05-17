@@ -367,4 +367,19 @@ public sealed class ResultTests
         // Assert
         Assert.True(finallyCalled);
     }
+
+    [Fact]
+    public void ImplicitConversion_FromSuccessT_ToResultT()
+    {
+        // Arrange
+        var success = Success.Custom("value");
+
+        // Act
+        Result<string> result = success;
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(success, result.Success);
+        Assert.Equal("value", result.Value);
+    }
 }

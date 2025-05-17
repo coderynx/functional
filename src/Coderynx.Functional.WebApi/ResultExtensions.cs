@@ -8,12 +8,12 @@ using HttpResults = Microsoft.AspNetCore.Http.Results;
 namespace Coderynx.Functional.WebApi;
 
 /// <summary>
-/// Provides extension methods for converting functional Result objects to ASP.NET Core IResult responses.
+///     Provides extension methods for converting functional Result objects to ASP.NET Core IResult responses.
 /// </summary>
 public static class ResultExtensions
 {
     /// <summary>
-    /// Converts a Result to an appropriate HTTP result.
+    ///     Converts a Result to an appropriate HTTP result.
     /// </summary>
     /// <param name="result">The Result to convert.</param>
     /// <returns>An IResult representing the appropriate HTTP response based on the Result state.</returns>
@@ -23,7 +23,7 @@ public static class ResultExtensions
     }
 
     /// <summary>
-    /// Converts a Result{TValue} to an appropriate HTTP result, including the contained value if successful.
+    ///     Converts a Result{TValue} to an appropriate HTTP result, including the contained value if successful.
     /// </summary>
     /// <typeparam name="TValue">The type of value contained in the Result.</typeparam>
     /// <param name="result">The Result{TValue} to convert.</param>
@@ -36,7 +36,7 @@ public static class ResultExtensions
     }
 
     /// <summary>
-    /// Converts a Result{TValue} to an appropriate HTTP result using a transform function for the value.
+    ///     Converts a Result{TValue} to an appropriate HTTP result using a transform function for the value.
     /// </summary>
     /// <typeparam name="TValue">The type of value contained in the Result.</typeparam>
     /// <param name="result">The Result{TValue} to convert.</param>
@@ -55,7 +55,7 @@ public static class ResultExtensions
     }
 
     /// <summary>
-    /// Internal helper method to convert a Result to an HTTP response.
+    ///     Internal helper method to convert a Result to an HTTP response.
     /// </summary>
     /// <param name="result">The Result to convert.</param>
     /// <param name="value">The value to include in the response (if applicable).</param>
@@ -79,7 +79,7 @@ public static class ResultExtensions
     }
 
     /// <summary>
-    /// Converts a failed Result to a ProblemDetails HTTP response.
+    ///     Converts a failed Result to a ProblemDetails HTTP response.
     /// </summary>
     /// <param name="result">The Result containing an error.</param>
     /// <returns>An IResult representing a problem details response based on the error information.</returns>

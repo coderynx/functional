@@ -1,17 +1,17 @@
 ﻿namespace Coderynx.Functional.Results.Errors;
 
 /// <summary>
-/// Represents an error that occurred during an operation.
+///     Represents an error that occurred during an operation.
 /// </summary>
 public record Error
 {
     /// <summary>
-    /// Represents the absence of an error.
+    ///     Represents the absence of an error.
     /// </summary>
     public static readonly Error None = new(ErrorKind.None, "Error.None", "No error");
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Error"/> class.
+    ///     Initializes a new instance of the <see cref="Error" /> class.
     /// </summary>
     /// <param name="kind">The kind of error.</param>
     /// <param name="code">A code that identifies the error.</param>
@@ -24,22 +24,22 @@ public record Error
     }
 
     /// <summary>
-    /// Gets the kind of the error.
+    ///     Gets the kind of the error.
     /// </summary>
     public ErrorKind Kind { get; }
 
     /// <summary>
-    /// Gets a code that identifies the error.
+    ///     Gets a code that identifies the error.
     /// </summary>
     public string Code { get; }
 
     /// <summary>
-    /// Gets a human-readable description of the error.
+    ///     Gets a human-readable description of the error.
     /// </summary>
     public string Message { get; }
 
     /// <summary>
-    /// Creates an error from an unexpected exception.
+    ///     Creates an error from an unexpected exception.
     /// </summary>
     /// <typeparam name="TException">The type of the exception.</typeparam>
     /// <param name="exception">The exception that occurred.</param>
@@ -53,7 +53,18 @@ public record Error
     }
 
     /// <summary>
-    /// Creates a not found error.
+    ///     Creates a new instance of the <see cref="Error" /> class with an unexpected error kind.
+    /// </summary>
+    /// <param name="code">A code that identifies the unexpected error.</param>
+    /// <param name="message">A human-readable description of the unexpected error.</param>
+    /// <returns>An instance of the <see cref="Error" /> class representing the unexpected error.</returns>
+    public static Error Unexpected(string code, string message)
+    {
+        return new Error(ErrorKind.Unexpected, code, message);
+    }
+
+    /// <summary>
+    ///     Creates a not found error.
     /// </summary>
     /// <param name="code">A code that identifies the error.</param>
     /// <param name="message">A human-readable description of the error.</param>
@@ -64,7 +75,7 @@ public record Error
     }
 
     /// <summary>
-    /// Creates a conflict error.
+    ///     Creates a conflict error.
     /// </summary>
     /// <param name="code">A code that identifies the error.</param>
     /// <param name="message">A human-readable description of the error.</param>
@@ -75,7 +86,7 @@ public record Error
     }
 
     /// <summary>
-    /// Creates an invalid input error.
+    ///     Creates an invalid input error.
     /// </summary>
     /// <param name="code">A code that identifies the error.</param>
     /// <param name="message">A human-readable description of the error.</param>
@@ -86,7 +97,7 @@ public record Error
     }
 
     /// <summary>
-    /// Creates an invalid operation error.
+    ///     Creates an invalid operation error.
     /// </summary>
     /// <param name="code">A code that identifies the error.</param>
     /// <param name="message">A human-readable description of the error.</param>
@@ -97,7 +108,7 @@ public record Error
     }
 
     /// <summary>
-    /// Creates a custom error.
+    ///     Creates a custom error.
     /// </summary>
     /// <param name="code">A code that identifies the error.</param>
     /// <param name="message">A human-readable description of the error.</param>
@@ -108,7 +119,7 @@ public record Error
     }
 
     /// <summary>
-    /// Implicitly converts an error to an error exception.
+    ///     Implicitly converts an error to an error exception.
     /// </summary>
     /// <param name="error">The error to convert.</param>
     public static implicit operator ErrorException(Error error)

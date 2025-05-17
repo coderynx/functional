@@ -1,18 +1,18 @@
 namespace Coderynx.Functional.Results.Successes;
 
 /// <summary>
-/// Represents a success result that can be used in functional result patterns.
-/// Provides static methods to create different types of success results.
+///     Represents a success result that can be used in functional result patterns.
+///     Provides static methods to create different types of success results.
 /// </summary>
 public record Success
 {
     /// <summary>
-    /// A default success instance with None kind.
+    ///     A default success instance with None kind.
     /// </summary>
     public static readonly Success None = new(SuccessKind.None);
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Success"/> class with the specified kind.
+    ///     Initializes a new instance of the <see cref="Success" /> class with the specified kind.
     /// </summary>
     /// <param name="Kind">The kind of success result.</param>
     internal Success(SuccessKind Kind)
@@ -21,12 +21,12 @@ public record Success
     }
 
     /// <summary>
-    /// Gets the kind of success result.
+    ///     Gets the kind of success result.
     /// </summary>
     public SuccessKind Kind { get; }
 
     /// <summary>
-    /// Creates a success result indicating a resource was found.
+    ///     Creates a success result indicating a resource was found.
     /// </summary>
     /// <returns>A success result with Found kind.</returns>
     public static Success Found()
@@ -35,7 +35,7 @@ public record Success
     }
 
     /// <summary>
-    /// Creates a success result with a value indicating a resource was found.
+    ///     Creates a success result with a value indicating a resource was found.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <param name="value">The value associated with the success result.</param>
@@ -46,7 +46,7 @@ public record Success
     }
 
     /// <summary>
-    /// Creates a success result indicating a resource was created.
+    ///     Creates a success result indicating a resource was created.
     /// </summary>
     /// <returns>A success result with Created kind.</returns>
     public static Success Created()
@@ -55,7 +55,7 @@ public record Success
     }
 
     /// <summary>
-    /// Creates a success result with a value indicating a resource was created.
+    ///     Creates a success result with a value indicating a resource was created.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <param name="value">The value associated with the success result.</param>
@@ -66,7 +66,7 @@ public record Success
     }
 
     /// <summary>
-    /// Creates a success result indicating a resource was updated.
+    ///     Creates a success result indicating a resource was updated.
     /// </summary>
     /// <returns>A success result with Updated kind.</returns>
     public static Success Updated()
@@ -75,7 +75,7 @@ public record Success
     }
 
     /// <summary>
-    /// Creates a success result with a value indicating a resource was updated.
+    ///     Creates a success result with a value indicating a resource was updated.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <param name="value">The value associated with the success result.</param>
@@ -86,7 +86,7 @@ public record Success
     }
 
     /// <summary>
-    /// Creates a success result indicating a resource was deleted.
+    ///     Creates a success result indicating a resource was deleted.
     /// </summary>
     /// <returns>A success result with Deleted kind.</returns>
     public static Success Deleted()
@@ -95,7 +95,7 @@ public record Success
     }
 
     /// <summary>
-    /// Creates a success result with a value indicating a resource was deleted.
+    ///     Creates a success result with a value indicating a resource was deleted.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <param name="value">The value associated with the success result.</param>
@@ -106,7 +106,7 @@ public record Success
     }
 
     /// <summary>
-    /// Creates a success result indicating a request was accepted.
+    ///     Creates a success result indicating a request was accepted.
     /// </summary>
     /// <returns>A success result with Accepted kind.</returns>
     public static Success Accepted()
@@ -115,7 +115,7 @@ public record Success
     }
 
     /// <summary>
-    /// Creates a success result with a value indicating a request was accepted.
+    ///     Creates a success result with a value indicating a request was accepted.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <param name="value">The value associated with the success result.</param>
@@ -126,7 +126,7 @@ public record Success
     }
 
     /// <summary>
-    /// Creates a success result with Custom kind.
+    ///     Creates a success result with Custom kind.
     /// </summary>
     /// <returns>A success result with Custom kind.</returns>
     public static Success Custom()
@@ -135,7 +135,7 @@ public record Success
     }
 
     /// <summary>
-    /// Creates a success result with a value and Custom kind.
+    ///     Creates a success result with a value and Custom kind.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <param name="value">The value associated with the success result.</param>
@@ -147,14 +147,14 @@ public record Success
 }
 
 /// <summary>
-/// Represents a success result that contains a value of type <typeparamref name="T"/>.
-/// Inherits from <see cref="Success"/> and adds the ability to store a strongly-typed value.
+///     Represents a success result that contains a value of type <typeparamref name="T" />.
+///     Inherits from <see cref="Success" /> and adds the ability to store a strongly-typed value.
 /// </summary>
 /// <typeparam name="T">The type of the value associated with the success result.</typeparam>
 public sealed record Success<T> : Success
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="Success{T}"/> class with the specified kind and value.
+    ///     Initializes a new instance of the <see cref="Success{T}" /> class with the specified kind and value.
     /// </summary>
     /// <param name="Kind">The kind of success result.</param>
     /// <param name="Value">The value associated with the success result.</param>
@@ -164,7 +164,7 @@ public sealed record Success<T> : Success
     }
 
     /// <summary>
-    /// Gets the value associated with the success result.
+    ///     Gets the value associated with the success result.
     /// </summary>
     public T Value { get; }
 }
