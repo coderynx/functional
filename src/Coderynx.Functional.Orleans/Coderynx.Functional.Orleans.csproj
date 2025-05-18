@@ -4,6 +4,15 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <PackageId>Coderynx.Functional.Orleans</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>coderynx</Authors>
+        <Description>Functional library extensions for Microsoft Orleans</Description>
+        <PackageTags>functional</PackageTags>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
