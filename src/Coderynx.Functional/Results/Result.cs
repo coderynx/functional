@@ -9,26 +9,16 @@ namespace Coderynx.Functional.Results;
 /// </summary>
 public class Result
 {
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="Result" /> class.
-    /// </summary>
-    /// <param name="success">The success object, or null if the operation failed.</param>
-    /// <param name="error">The error object, or null if the operation succeeded.</param>
-    /// <exception cref="InvalidOperationException">Thrown when both success and error are null, or when both are provided.</exception>
-    internal Result(Success? success = null, Error? error = null)
+    internal Result(Success success)
     {
-        if (success is null && error is null)
-        {
-            throw new InvalidOperationException("Either success or error must be provided.");
-        }
+        Error = Error.None;
+        Success = success;
+    }
 
-        if (success is not null && error is not null)
-        {
-            throw new InvalidOperationException("Only one of success or error can be provided.");
-        }
-
-        Error = error ?? Error.None;
-        Success = success ?? Success.None;
+    internal Result(Error error)
+    {
+        Error = error;
+        Success = Success.None;
     }
 
     /// <summary>
@@ -52,27 +42,6 @@ public class Result
     public bool IsFailure => !IsSuccess;
 
     /// <summary>
-    ///     Creates a success result with the specified success object.
-    /// </summary>
-    /// <param name="success">The success object to include in the result.</param>
-    /// <returns>A new success result.</returns>
-    private static Result CreateSuccess(Success success)
-    {
-        return new Result(success);
-    }
-
-    /// <summary>
-    ///     Creates a success result with the specified success object containing a value.
-    /// </summary>
-    /// <typeparam name="TValue">The type of the value in the success object.</typeparam>
-    /// <param name="success">The success object containing a value.</param>
-    /// <returns>A new success result with a value.</returns>
-    private static Result<TValue> CreateSuccess<TValue>(Success<TValue> success)
-    {
-        return new Result<TValue>(success);
-    }
-
-    /// <summary>
     ///     Creates a success result representing a resource creation operation.
     /// </summary>
     /// <returns>A success result with <see cref="SuccessKind.Created" />.</returns>
@@ -89,7 +58,7 @@ public class Result
     /// <returns>A success result with the created value.</returns>
     public static Result<TValue> Created<TValue>(TValue value)
     {
-        return CreateSuccess(new Success<TValue>(SuccessKind.Created, value));
+        return new Result<TValue>(new Success<TValue>(SuccessKind.Created, value));
     }
 
     /// <summary>
@@ -109,7 +78,7 @@ public class Result
     /// <returns>A success result with the updated value.</returns>
     public static Result<TValue> Updated<TValue>(TValue value)
     {
-        return CreateSuccess(new Success<TValue>(SuccessKind.Updated, value));
+        return new Result<TValue>(new Success<TValue>(SuccessKind.Updated, value));
     }
 
     /// <summary>
@@ -118,7 +87,7 @@ public class Result
     /// <returns>A success result with <see cref="SuccessKind.Found" />.</returns>
     public static Result Found()
     {
-        return CreateSuccess(new Success(SuccessKind.Found));
+        return new Result(new Success(SuccessKind.Found));
     }
 
     /// <summary>
@@ -129,7 +98,7 @@ public class Result
     /// <returns>A success result with the found value.</returns>
     public static Result<TValue> Found<TValue>(TValue value)
     {
-        return CreateSuccess(new Success<TValue>(SuccessKind.Found, value));
+        return new Result<TValue>(new Success<TValue>(SuccessKind.Found, value));
     }
 
     /// <summary>
@@ -138,7 +107,7 @@ public class Result
     /// <returns>A success result with <see cref="SuccessKind.Accepted" />.</returns>
     public static Result Accepted()
     {
-        return CreateSuccess(new Success(SuccessKind.Accepted));
+        return new Success(SuccessKind.Accepted);
     }
 
     /// <summary>
@@ -149,7 +118,7 @@ public class Result
     /// <returns>A success result with the accepted value.</returns>
     public static Result<TValue> Accepted<TValue>(TValue value)
     {
-        return CreateSuccess(new Success<TValue>(SuccessKind.Accepted, value));
+        return new Result<TValue>(new Success<TValue>(SuccessKind.Accepted, value));
     }
 
     /// <summary>
@@ -158,7 +127,7 @@ public class Result
     /// <returns>A success result with <see cref="SuccessKind.Deleted" />.</returns>
     public static Result Deleted()
     {
-        return CreateSuccess(new Success(SuccessKind.Deleted));
+        return new Result(new Success(SuccessKind.Deleted));
     }
 
     /// <summary>
@@ -169,28 +138,7 @@ public class Result
     /// <returns>A success result with the deleted value.</returns>
     public static Result<TValue> Deleted<TValue>(TValue value)
     {
-        return CreateSuccess(new Success<TValue>(SuccessKind.Deleted, value));
-    }
-
-    /// <summary>
-    ///     Creates a failure result with the specified error.
-    /// </summary>
-    /// <param name="error">The error to include in the result.</param>
-    /// <returns>A new failure result.</returns>
-    protected static Result CreateFailure(Error error)
-    {
-        return new Result(null, error);
-    }
-
-    /// <summary>
-    ///     Creates a failure result with the specified error for a value result.
-    /// </summary>
-    /// <typeparam name="TValue">The type that would have been returned on success.</typeparam>
-    /// <param name="error">The error to include in the result.</param>
-    /// <returns>A new failure result.</returns>
-    protected static Result<TValue> CreateFailure<TValue>(Error error)
-    {
-        return new Result<TValue>(null, error);
+        return new Result<TValue>(new Success<TValue>(SuccessKind.Deleted, value));
     }
 
     /// <summary>
@@ -252,7 +200,7 @@ public class Result
             onTry();
 
             var success = onSuccess?.Invoke() ?? Success.Custom();
-            return CreateSuccess(success);
+            return new Result(success);
         }
         catch (ErrorException exception)
         {
@@ -293,7 +241,7 @@ public class Result
             await onTry();
 
             var success = onSuccess?.Invoke() ?? Success.Custom();
-            return CreateSuccess(success);
+            return new Result(success);
         }
         catch (ErrorException exception)
         {
@@ -337,7 +285,7 @@ public class Result
 
             // TODO: Evaluate the possibility to check if value is null.
             var result = onSuccess?.Invoke(value) ?? Success.Custom(value);
-            return CreateSuccess(result);
+            return new Result<T>(result);
         }
         catch (ErrorException exception)
         {
@@ -382,7 +330,7 @@ public class Result
             var value = await onTry();
 
             var result = onSuccess?.Invoke(value) ?? Success.Custom(value);
-            return CreateSuccess(result);
+            return new Result<T>(result);
         }
         catch (ErrorException exception)
         {
@@ -403,12 +351,12 @@ public class Result
 
     public static implicit operator Result(Success success)
     {
-        return CreateSuccess(success);
+        return new Result(success);
     }
 
     public static implicit operator Result(Error error)
     {
-        return CreateFailure(error);
+        return new Result(error);
     }
 }
 
@@ -419,23 +367,12 @@ public class Result
 /// <typeparam name="TValue">The type of the value contained in the success object.</typeparam>
 public sealed class Result<TValue> : Result
 {
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="Result{TValue}" /> class.
-    /// </summary>
-    /// <param name="value">The success object containing a value, or null if the operation failed.</param>
-    /// <param name="error">The error object, or null if the operation succeeded.</param>
-    /// <exception cref="InvalidOperationException">Thrown when both value and error are null, or when both are provided.</exception>
-    internal Result(Success<TValue>? value = null, Error? error = null) : base(value, error)
+    public Result(Success<TValue> success) : base(success)
     {
-        if (value is null && error is null)
-        {
-            throw new InvalidOperationException("Either value or error must be provided.");
-        }
+    }
 
-        if (value is not null && error is not null)
-        {
-            throw new InvalidOperationException("Only one of value or error can be provided.");
-        }
+    public Result(Error error) : base(error)
+    {
     }
 
     /// <summary>
@@ -473,7 +410,7 @@ public sealed class Result<TValue> : Result
     /// <returns>The result of the binding function if successful, otherwise a failure result with the same error.</returns>
     public Result<TNext> Bind<TNext>(Func<TValue, Result<TNext>> bind)
     {
-        return IsSuccess ? bind(Value) : CreateFailure<TNext>(Error);
+        return IsSuccess ? bind(Value) : new Result<TNext>(Error);
     }
 
     /// <summary>
@@ -484,7 +421,7 @@ public sealed class Result<TValue> : Result
     /// <returns>The result of the binding function if successful, otherwise a failure result with the same error.</returns>
     public async Task<Result<TNext>> BindAsync<TNext>(Func<TValue, Task<Result<TNext>>> bind)
     {
-        return IsSuccess ? await bind(Value) : CreateFailure<TNext>(Error);
+        return IsSuccess ? await bind(Value) : new Result<TNext>(Error);
     }
 
     /// <summary>
@@ -504,6 +441,6 @@ public sealed class Result<TValue> : Result
     /// <returns>A failure result containing the specified error.</returns>
     public static implicit operator Result<TValue>(Error error)
     {
-        return CreateFailure<TValue>(error);
+        return new Result<TValue>(error);
     }
 }

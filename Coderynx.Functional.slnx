@@ -1,5 +1,6 @@
 ﻿<Solution>
     <Folder Name="/src/">
+        <Project Path="src\Coderynx.Functional.Orleans\Coderynx.Functional.Orleans.csproj" Type="Classic C#"/>
         <Project Path="src\Coderynx.Functional.WebApi\Coderynx.Functional.WebApi.csproj" Type="Classic C#"/>
         <Project Path="src\Coderynx.Functional\Coderynx.Functional.csproj" Type="Classic C#"/>
     </Folder>

@@ -15,7 +15,7 @@ public record Success
     ///     Initializes a new instance of the <see cref="Success" /> class with the specified kind.
     /// </summary>
     /// <param name="Kind">The kind of success result.</param>
-    internal Success(SuccessKind Kind)
+    public Success(SuccessKind Kind)
     {
         this.Kind = Kind;
     }
@@ -158,7 +158,7 @@ public sealed record Success<T> : Success
     /// </summary>
     /// <param name="Kind">The kind of success result.</param>
     /// <param name="Value">The value associated with the success result.</param>
-    internal Success(SuccessKind Kind, T Value) : base(Kind)
+    public Success(SuccessKind Kind, T Value) : base(Kind)
     {
         this.Value = Value;
     }

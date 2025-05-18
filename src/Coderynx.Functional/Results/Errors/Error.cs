@@ -16,7 +16,7 @@ public record Error
     /// <param name="kind">The kind of error.</param>
     /// <param name="code">A code that identifies the error.</param>
     /// <param name="message">A human-readable description of the error.</param>
-    internal Error(ErrorKind kind, string code, string message)
+    public Error(ErrorKind kind, string code, string message)
     {
         Kind = kind;
         Code = code;
@@ -44,7 +44,7 @@ public record Error
     /// <typeparam name="TException">The type of the exception.</typeparam>
     /// <param name="exception">The exception that occurred.</param>
     /// <returns>An error representing the unexpected exception.</returns>
-    internal static Error Unexpected<TException>(TException exception) where TException : Exception
+    public static Error Unexpected<TException>(TException exception) where TException : Exception
     {
         return new Error(
             kind: ErrorKind.Unexpected,
