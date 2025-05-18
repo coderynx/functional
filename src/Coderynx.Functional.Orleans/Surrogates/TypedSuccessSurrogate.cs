@@ -15,16 +15,7 @@ internal sealed class TypedSuccessSurrogateConverter<T> : IConverter<Success<T>,
 {
     public Success<T> ConvertFromSurrogate(in TypedSuccessSurrogate<T> surrogate)
     {
-        return surrogate.Kind switch
-        {
-            SuccessKind.Found => Success.Found(surrogate.Value),
-            SuccessKind.Created => Success.Created(surrogate.Value),
-            SuccessKind.Updated => Success.Updated(surrogate.Value),
-            SuccessKind.Deleted => Success.Deleted(surrogate.Value),
-            SuccessKind.Accepted => Success.Accepted(surrogate.Value),
-            SuccessKind.Custom => Success.Custom(surrogate.Value),
-            _ => throw new ArgumentOutOfRangeException()
-        };
+        return new Success<T>(surrogate.Kind, surrogate.Value);
     }
 
     public TypedSuccessSurrogate<T> ConvertToSurrogate(in Success<T> value)

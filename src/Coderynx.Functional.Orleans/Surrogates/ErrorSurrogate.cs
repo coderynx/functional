@@ -16,17 +16,7 @@ internal sealed class ErrorSurrogateConverter : IConverter<Error, ErrorSurrogate
 {
     public Error ConvertFromSurrogate(in ErrorSurrogate surrogate)
     {
-        return surrogate.Kind switch
-        {
-            ErrorKind.None => Error.None,
-            ErrorKind.Unexpected => Error.Unexpected(surrogate.Code, surrogate.Message),
-            ErrorKind.NotFound => Error.NotFound(surrogate.Code, surrogate.Message),
-            ErrorKind.Conflict => Error.Conflict(surrogate.Code, surrogate.Message),
-            ErrorKind.InvalidInput => Error.InvalidInput(surrogate.Code, surrogate.Message),
-            ErrorKind.InvalidOperation => Error.InvalidOperation(surrogate.Code, surrogate.Message),
-            ErrorKind.Custom => Error.Custom(surrogate.Code, surrogate.Message),
-            _ => throw new ArgumentOutOfRangeException()
-        };
+        return new Error(surrogate.Kind, surrogate.Code, surrogate.Message);
     }
 
     public ErrorSurrogate ConvertToSurrogate(in Error value)

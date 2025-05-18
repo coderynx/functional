@@ -8,14 +8,12 @@ namespace Coderynx.Functional.Orleans.Surrogates;
 [GenerateSerializer]
 internal readonly struct TypedResultSurrogate<TValue>(
     bool isSuccess,
-    bool isFailure,
     Error error,
     Success<TValue> success) where TValue : class
 {
     [Id(0)] public bool IsSuccess { get; } = isSuccess;
-    [Id(1)] public bool IsFailure { get; } = isFailure;
-    [Id(2)] public Error Error { get; } = error;
-    [Id(3)] public Success<TValue> Success { get; } = success;
+    [Id(1)] public Error Error { get; } = error;
+    [Id(2)] public Success<TValue> Success { get; } = success;
 }
 
 [RegisterConverter]
@@ -31,8 +29,6 @@ internal sealed class TypedResultSurrogateConverter<TValue> : IConverter<Result<
 
     public TypedResultSurrogate<TValue> ConvertToSurrogate(in Result<TValue> value)
     {
-        return value.IsSuccess
-            ? new TypedResultSurrogate<TValue>(true, false, Error.None, value.Success)
-            : new TypedResultSurrogate<TValue>(false, true, value.Error, value.Success);
+        return new TypedResultSurrogate<TValue>(value.IsSuccess, value.Error, value.Success);
     }
 }
