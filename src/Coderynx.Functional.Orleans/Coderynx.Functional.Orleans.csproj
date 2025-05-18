@@ -16,6 +16,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <None Include="..\..\README.md" Pack="true" PackagePath=""/>
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Coderynx.Functional" Version="1.4.5"/>
         <PackageReference Include="Microsoft.Orleans.Serialization.Abstractions" Version="9.1.2"/>
     </ItemGroup>
