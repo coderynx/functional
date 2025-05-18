@@ -21,11 +21,7 @@
 
     <ItemGroup>
         <PackageReference Include="Coderynx.Functional" Version="1.4.6"/>
-        <PackageReference Include="Microsoft.Orleans.Serialization.Abstractions" Version="9.1.2"/>
-        <PackageReference Include="Microsoft.Orleans.CodeGenerator" Version="9.1.2">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
+        <PackageReference Include="Microsoft.Orleans.Sdk" Version="9.1.2"/>
     </ItemGroup>
 
 </Project>
