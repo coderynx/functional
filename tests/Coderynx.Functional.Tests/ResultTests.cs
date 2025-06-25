@@ -382,4 +382,121 @@ public sealed class ResultTests
         Assert.Equal(success, result.Success);
         Assert.Equal("value", result.Value);
     }
+
+    [Fact]
+    public void Map_TransformsValue_WhenSuccessful()
+    {
+        var result = Result.Created(5);
+        var mapped = result.Map(x => x * 2);
+
+        Assert.True(mapped.IsSuccess);
+        Assert.Equal(10, mapped.Value);
+    }
+
+    [Fact]
+    public void Flatten_UnwrapsNestedResult_WhenSuccessful()
+    {
+        var inner = Result.Created("flattened");
+        var outer = Result.Created(inner);
+        var flattened = outer.Flatten<string>();
+
+        Assert.True(flattened.IsSuccess);
+        Assert.Equal("flattened", flattened.Value);
+    }
+
+    [Fact]
+    public void Flatten_PreservesError_WhenOuterFails()
+    {
+        var error = Error.NotFound("E404", "Missing");
+        Result<Result<string>> outer = new Result<Result<string>>(error);
+        var flattened = outer.Flatten<string>();
+
+        Assert.True(flattened.IsFailure);
+        Assert.Equal(error, flattened.Error);
+    }
+
+    [Fact]
+    public async Task TapAsync_PerformsSideEffect_WhenSuccess()
+    {
+        var called = false;
+        var result = Result.Created("tap");
+        var tapped = await result.TapAsync(async _ =>
+        {
+            await Task.Delay(1);
+            called = true;
+        });
+
+        Assert.True(tapped.IsSuccess);
+        Assert.True(called);
+        Assert.Equal("tap", tapped.Value);
+    }
+
+    [Fact]
+    public async Task TapAsync_DoesNotPerformSideEffect_WhenFailure()
+    {
+        var called = false;
+        var error = Error.InvalidInput("E001", "Invalid");
+        var result = new Result<string>(error);
+        var tapped = await result.TapAsync(async _ =>
+        {
+            await Task.Delay(1);
+            called = true;
+        });
+
+        Assert.True(tapped.IsFailure);
+        Assert.False(called);
+        Assert.Equal(error, tapped.Error);
+    }
+
+    [Fact]
+    public async Task MapAsync_TransformsValue_WhenSuccess()
+    {
+        var result = Result.Created(10);
+        var mapped = await result.MapAsync(async val =>
+        {
+            await Task.Delay(1);
+            return val * 3;
+        });
+
+        Assert.True(mapped.IsSuccess);
+        Assert.Equal(30, mapped.Value);
+    }
+
+    [Fact]
+    public async Task MapAsync_PreservesError_WhenFailure()
+    {
+        var error = Error.Conflict("E409", "Conflict");
+        var result = new Result<int>(error);
+        var mapped = await result.MapAsync(async val =>
+        {
+            await Task.Delay(1);
+            return val * 2;
+        });
+
+        Assert.True(mapped.IsFailure);
+        Assert.Equal(error, mapped.Error);
+    }
+
+    [Fact]
+    public void Tap_PerformsSideEffect_WhenSuccess()
+    {
+        var called = false;
+        var result = Result.Created("ok");
+        var tapped = result.Tap(_ => called = true);
+
+        Assert.True(tapped.IsSuccess);
+        Assert.True(called);
+        Assert.Equal("ok", tapped.Value);
+    }
+
+    [Fact]
+    public void Tap_DoesNotPerformSideEffect_WhenFailure()
+    {
+        var called = false;
+        var result = new Result<string>(Error.InvalidInput("E001", "Invalid"));
+        var tapped = result.Tap(_ => called = true);
+
+        Assert.True(tapped.IsFailure);
+        Assert.False(called);
+    }
 }
