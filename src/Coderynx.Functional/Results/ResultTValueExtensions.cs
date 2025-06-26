@@ -214,7 +214,7 @@ public static class ResultTValueExtensions
     public static Result<TNext> Map<TNext, TValue>(this Result<TValue> result, Func<TValue, TNext> map)
     {
         return result.IsSuccess
-            ? Success.Created(map(result.Value))
+            ? new Result<TNext>(new Success<TNext>(result.Success.Kind, map(result.Value)))
             : new Result<TNext>(result.Error);
     }
 
