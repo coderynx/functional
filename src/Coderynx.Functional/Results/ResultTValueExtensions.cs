@@ -288,6 +288,29 @@ public static class ResultTValueExtensions
     {
         return result.IsSuccess ? await bind(result.Value) : new Result(result.Error);
     }
+
+    /// <summary>
+    /// Asynchronously binds the result of the task-based result to a function that returns a new task-based result.
+    /// If the result is successful, executes the <paramref name="bind" /> function with the successful value.
+    /// Otherwise, returns the error from the original result.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value contained in the original result.</typeparam>
+    /// <param name="resultTask">The task representing the original result to be bound.</param>
+    /// <param name="bind">
+    /// A function to be executed if the original result is successful, which takes the value as a parameter
+    /// and returns a new task-based result.
+    /// </param>
+    /// <returns>
+    /// A task representing the resulting operation, which will contain the result of executing the
+    /// <paramref name="bind" /> function or the original error if the result was unsuccessful.
+    /// </returns>
+    public static async Task<Result> BindAsync<TValue>(
+        this Task<Result<TValue>> resultTask,
+        Func<TValue, Task<Result>> bind)
+    {
+        var result = await resultTask;
+        return result.IsSuccess ? await bind(result.Value) : result.Error;
+    }
     
     /// <summary>
     ///     Asynchronously binds the given successful result to a function that produces another asynchronous result
