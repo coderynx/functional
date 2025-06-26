@@ -408,7 +408,7 @@ public sealed class ResultTests
     public void Flatten_PreservesError_WhenOuterFails()
     {
         var error = Error.NotFound("E404", "Missing");
-        Result<Result<string>> outer = new Result<Result<string>>(error);
+        var outer = new Result<Result<string>>(error);
         var flattened = outer.Flatten();
 
         Assert.True(flattened.IsFailure);

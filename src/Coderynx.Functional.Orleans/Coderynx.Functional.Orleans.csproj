@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Coderynx.Functional" Version="1.5.6" />
+        <PackageReference Include="Coderynx.Functional" Version="1.5.6"/>
         <PackageReference Include="Microsoft.Orleans.Sdk" Version="9.1.2"/>
     </ItemGroup>
 
