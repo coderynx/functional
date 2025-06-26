@@ -399,6 +399,28 @@ public static class ResultTValueExtensions
     }
 
     /// <summary>
+    /// Transforms the value of a successful result asynchronously using the provided mapping function.
+    /// If the result is a failure, it returns the failure as-is.
+    /// </summary>
+    /// <typeparam name="TNext">The type of the transformed value.</typeparam>
+    /// <typeparam name="TValue">The type of the value contained in the original result.</typeparam>
+    /// <param name="resultTask">A task representing the result to be transformed.</param>
+    /// <param name="map">A function to transform the value of a successful result.</param>
+    /// <returns>
+    /// A task representing the transformed result. If the original result is successful, the task contains the
+    /// transformed result. Otherwise, the task contains the same failure result.
+    /// </returns>
+    public static async Task<Result<TNext>> MapAsync<TNext, TValue>(
+        this Task<Result<TValue>> resultTask,
+        Func<TValue, TNext> map)
+    {
+        var result = await resultTask;
+        return result.IsSuccess 
+            ? new Result<TNext>(new Success<TNext>(result.Success.Kind, map(result.Value)))
+            : new Result<TNext>(result.Error);
+    }
+    
+    /// <summary>
     ///     Executes a specified action if the result state is successful and returns the original result.
     ///     This method allows performing side effects without altering the result's state or value.
     /// </summary>
