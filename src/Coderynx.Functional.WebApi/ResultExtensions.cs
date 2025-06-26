@@ -3,7 +3,6 @@ using Coderynx.Functional.Results.Errors;
 using Coderynx.Functional.Results.Successes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using HttpResults = Microsoft.AspNetCore.Http.Results;
 
 namespace Coderynx.Functional.WebApi;
 
@@ -49,9 +48,9 @@ public static class ResultExtensions
             return ToHttpResultInternal(result, null);
         }
 
-        var transformResult = transform(result.Value);
+        var transformerResult = transform(result.Value);
 
-        return ToHttpResultInternal(result, transformResult);
+        return ToHttpResultInternal(result, transformerResult);
     }
 
     /// <summary>
@@ -66,12 +65,12 @@ public static class ResultExtensions
         {
             return result.Success.Kind switch
             {
-                SuccessKind.Created => HttpResults.Ok(value),
-                SuccessKind.Updated => HttpResults.NoContent(),
-                SuccessKind.Deleted => HttpResults.NoContent(),
-                SuccessKind.Found => HttpResults.Ok(value),
-                SuccessKind.Accepted => HttpResults.Accepted(),
-                _ => HttpResults.Ok()
+                SuccessKind.Created => Microsoft.AspNetCore.Http.Results.Ok(value),
+                SuccessKind.Updated => Microsoft.AspNetCore.Http.Results.NoContent(),
+                SuccessKind.Deleted => Microsoft.AspNetCore.Http.Results.NoContent(),
+                SuccessKind.Found => Microsoft.AspNetCore.Http.Results.Ok(value),
+                SuccessKind.Accepted => Microsoft.AspNetCore.Http.Results.Accepted(),
+                _ => Microsoft.AspNetCore.Http.Results.Ok()
             };
         }
 
@@ -106,6 +105,6 @@ public static class ResultExtensions
             Instance = null
         };
 
-        return HttpResults.Problem(details);
+        return Microsoft.AspNetCore.Http.Results.Problem(details);
     }
 }

@@ -398,7 +398,7 @@ public sealed class ResultTests
     {
         var inner = Result.Created("flattened");
         var outer = Result.Created(inner);
-        var flattened = outer.Flatten<string>();
+        var flattened = outer.Flatten();
 
         Assert.True(flattened.IsSuccess);
         Assert.Equal("flattened", flattened.Value);
@@ -409,7 +409,7 @@ public sealed class ResultTests
     {
         var error = Error.NotFound("E404", "Missing");
         Result<Result<string>> outer = new Result<Result<string>>(error);
-        var flattened = outer.Flatten<string>();
+        var flattened = outer.Flatten();
 
         Assert.True(flattened.IsFailure);
         Assert.Equal(error, flattened.Error);
@@ -419,12 +419,13 @@ public sealed class ResultTests
     public async Task TapAsync_PerformsSideEffect_WhenSuccess()
     {
         var called = false;
-        var result = Result.Created("tap");
-        var tapped = await result.TapAsync(async _ =>
-        {
-            await Task.Delay(1);
-            called = true;
-        });
+
+        var tapped = await Result.Created("tap")
+            .TapAsync(async () =>
+            {
+                await Task.Delay(1);
+                called = true;
+            });
 
         Assert.True(tapped.IsSuccess);
         Assert.True(called);
@@ -437,7 +438,7 @@ public sealed class ResultTests
         var called = false;
         var error = Error.InvalidInput("E001", "Invalid");
         var result = new Result<string>(error);
-        var tapped = await result.TapAsync(async _ =>
+        var tapped = await result.TapAsync(async () =>
         {
             await Task.Delay(1);
             called = true;
@@ -446,35 +447,6 @@ public sealed class ResultTests
         Assert.True(tapped.IsFailure);
         Assert.False(called);
         Assert.Equal(error, tapped.Error);
-    }
-
-    [Fact]
-    public async Task MapAsync_TransformsValue_WhenSuccess()
-    {
-        var result = Result.Created(10);
-        var mapped = await result.MapAsync(async val =>
-        {
-            await Task.Delay(1);
-            return val * 3;
-        });
-
-        Assert.True(mapped.IsSuccess);
-        Assert.Equal(30, mapped.Value);
-    }
-
-    [Fact]
-    public async Task MapAsync_PreservesError_WhenFailure()
-    {
-        var error = Error.Conflict("E409", "Conflict");
-        var result = new Result<int>(error);
-        var mapped = await result.MapAsync(async val =>
-        {
-            await Task.Delay(1);
-            return val * 2;
-        });
-
-        Assert.True(mapped.IsFailure);
-        Assert.Equal(error, mapped.Error);
     }
 
     [Fact]
@@ -498,5 +470,220 @@ public sealed class ResultTests
 
         Assert.True(tapped.IsFailure);
         Assert.False(called);
+    }
+
+    [Fact]
+    public void Bind_WhenSuccess_CallsBindFunction()
+    {
+        // Arrange
+        var result = Result.Found();
+        var bindResult = Result.Created();
+        var bindCalled = false;
+
+        // Act
+        var output = result.Bind(() =>
+        {
+            bindCalled = true;
+            return bindResult;
+        });
+
+        // Assert
+        Assert.True(bindCalled);
+        Assert.Equal(bindResult, output);
+    }
+
+    [Fact]
+    public void Bind_WhenFailure_DoesNotCallBindFunction()
+    {
+        // Arrange
+        var error = Error.InvalidInput("E001", "Invalid input");
+        var result = (Result)error;
+        var bindCalled = false;
+
+        // Act
+        var output = result.Bind(() =>
+        {
+            bindCalled = true;
+            return Result.Created();
+        });
+
+        // Assert
+        Assert.False(bindCalled);
+        Assert.Equal(result, output);
+    }
+
+    [Fact]
+    public async Task BindAsync_WhenSuccess_CallsBindFunction()
+    {
+        // Arrange
+        var result = Result.Found();
+        var bindResult = Result.Created();
+        var bindCalled = false;
+
+        // Act
+        var output = await result.BindAsync(() =>
+        {
+            bindCalled = true;
+            return Task.FromResult(bindResult);
+        });
+
+        // Assert
+        Assert.True(bindCalled);
+        Assert.Equal(bindResult, output);
+    }
+
+    [Fact]
+    public async Task BindAsync_WhenFailure_DoesNotCallBindFunction()
+    {
+        // Arrange
+        var error = Error.InvalidInput("E001", "Invalid input");
+        var result = (Result)error;
+        var bindCalled = false;
+
+        // Act
+        var output = await result.BindAsync(() =>
+        {
+            bindCalled = true;
+            return Task.FromResult(Result.Created());
+        });
+
+        // Assert
+        Assert.False(bindCalled);
+        Assert.Equal(result, output);
+    }
+
+    [Fact]
+    public async Task BindAsync_TaskResult_WhenSuccess_CallsBindFunction()
+    {
+        // Arrange
+        var resultTask = Task.FromResult(Result.Found());
+        var bindResult = Result.Created();
+        var bindCalled = false;
+
+        // Act
+        var output = await resultTask.BindAsync(() =>
+        {
+            bindCalled = true;
+            return Task.FromResult(bindResult);
+        });
+
+        // Assert
+        Assert.True(bindCalled);
+        Assert.Equal(bindResult, output);
+    }
+
+    [Fact]
+    public async Task BindAsync_TaskResult_WhenFailure_DoesNotCallBindFunction()
+    {
+        // Arrange
+        var error = Error.InvalidInput("E001", "Invalid input");
+        var resultTask = Task.FromResult((Result)error);
+        var bindCalled = false;
+
+        // Act
+        var output = await resultTask.BindAsync(() =>
+        {
+            bindCalled = true;
+            return Task.FromResult(Result.Created());
+        });
+
+        // Assert
+        Assert.False(bindCalled);
+        Assert.Equal(error, output.Error);
+    }
+
+    [Fact]
+    public async Task MatchAsync_TaskResult_WhenSuccess_CallsSuccessFunction()
+    {
+        // Arrange
+        var resultTask = Task.FromResult(Result.Found());
+        const string successValue = "success";
+        const string errorValue = "error";
+
+        // Act
+        var output = await resultTask.MatchAsync(
+            success: () => Task.FromResult(successValue),
+            error: _ => Task.FromResult(errorValue));
+
+        // Assert
+        Assert.Equal(successValue, output);
+    }
+
+    [Fact]
+    public async Task MatchAsync_TaskResult_WhenFailure_CallsErrorFunction()
+    {
+        // Arrange
+        var error = Error.InvalidInput("E001", "Invalid input");
+        var resultTask = Task.FromResult((Result)error);
+        const string successValue = "success";
+        const string errorValue = "error";
+
+        // Act
+        var output = await resultTask.MatchAsync(
+            success: () => Task.FromResult(successValue),
+            error: _ => Task.FromResult(errorValue));
+
+        // Assert
+        Assert.Equal(errorValue, output);
+    }
+
+    [Fact]
+    public void ExtensionMethods_CanBeChainedTogether()
+    {
+        // Arrange
+        var initialResult = Result.Found();
+        var tapCalled = false;
+        var bindCalled = false;
+        var thenCalled = false;
+
+        // Act
+        var finalResult = initialResult
+            .Tap(() => tapCalled = true)
+            .Bind(() =>
+            {
+                bindCalled = true;
+                return Result.Updated();
+            })
+            .Then(() =>
+            {
+                thenCalled = true;
+                return Result.Created();
+            });
+
+        // Assert
+        Assert.True(tapCalled);
+        Assert.True(bindCalled);
+        Assert.True(thenCalled);
+        Assert.True(finalResult.IsSuccess);
+        Assert.Equal(SuccessKind.Created, finalResult.Success.Kind);
+    }
+
+    [Fact]
+    public void ExtensionMethods_ChainStopsOnFirstFailure()
+    {
+        // Arrange
+        var initialResult = Result.Found();
+        var firstTapCalled = false;
+        var bindCalled = false;
+        var secondTapCalled = false;
+        var error = Error.InvalidInput("E001", "Bind failed");
+
+        // Act
+        var finalResult = initialResult
+            .Tap(() => firstTapCalled = true)
+            .Bind(() =>
+            {
+                bindCalled = true;
+                return error;
+            })
+            .Tap(() => secondTapCalled = true)
+            .Then(Result.Created);
+
+        // Assert
+        Assert.True(firstTapCalled);
+        Assert.True(bindCalled);
+        Assert.False(secondTapCalled);
+        Assert.True(finalResult.IsFailure);
+        Assert.Equal(error, finalResult.Error);
     }
 }

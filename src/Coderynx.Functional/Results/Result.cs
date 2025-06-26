@@ -142,40 +142,6 @@ public class Result
     }
 
     /// <summary>
-    ///     Transforms the result using the appropriate function based on success/failure state.
-    /// </summary>
-    /// <typeparam name="TOutput">The output type after transformation.</typeparam>
-    /// <param name="success">Function to call if this is a success result.</param>
-    /// <param name="fail">Function to call if this is a failure result.</param>
-    /// <returns>The output of either the success or failure function.</returns>
-    public TOutput Match<TOutput>(Func<TOutput> success, Func<Error, TOutput> fail)
-    {
-        return IsFailure
-            ? fail(Error)
-            : success();
-    }
-
-    /// <summary>
-    ///     Chains this result to another result-producing function if this is a success.
-    /// </summary>
-    /// <param name="bind">The function to call if this result is successful.</param>
-    /// <returns>The result of the binding function if successful, otherwise this failure result.</returns>
-    public Result Bind(Func<Result> bind)
-    {
-        return IsSuccess ? bind() : this;
-    }
-
-    /// <summary>
-    ///     Chains this result to an asynchronous result-producing function if this is a success.
-    /// </summary>
-    /// <param name="bind">The asynchronous function to call if this result is successful.</param>
-    /// <returns>The result of the binding function if successful, otherwise this failure result.</returns>
-    public async Task<Result> BindAsync(Func<Task<Result>> bind)
-    {
-        return IsSuccess ? await bind() : this;
-    }
-
-    /// <summary>
     ///     Executes an action within a try-catch block and returns a Result.
     /// </summary>
     /// <param name="onTry">The action to execute within the try block.</param>
@@ -258,35 +224,6 @@ public class Result
     }
 
     /// <summary>
-    /// Executes the specified action if the current result indicates success.
-    /// </summary>
-    /// <param name="action">The action to be executed if the result is successful.</param>
-    /// <returns>The original result instance.</returns>
-    public Result Tap(Action action)
-    {
-        if (IsSuccess)
-            action();
-
-        return this;
-    }
-
-    /// <summary>
-    /// Executes the provided asynchronous action if the result is successful and returns the same result instance.
-    /// This method allows chaining of tasks or side-effect actions without altering the result state.
-    /// </summary>
-    /// <param name="action">The asynchronous action to be executed if the result is successful.</param>
-    /// <returns>The original result instance to enable further chaining or usage.</returns>
-    public async Task<Result> TapAsync(Func<Task> action)
-    {
-        if (IsSuccess)
-        {
-            await action();
-        }
-
-        return this;
-    }
-
-    /// <summary>
     ///     Executes a function within a try-catch block and returns a Result with the function's return value.
     /// </summary>
     /// <typeparam name="T">The type of value returned by the function.</typeparam>
@@ -331,7 +268,7 @@ public class Result
             onFinally?.Invoke();
         }
     }
-    
+
     /// <summary>
     ///     Executes an asynchronous function within a try-catch block and returns a Result with the function's return value.
     /// </summary>
@@ -385,183 +322,5 @@ public class Result
     public static implicit operator Result(Error error)
     {
         return new Result(error);
-    }
-}
-
-/// <summary>
-///     Represents the result of an operation that can either succeed or fail, with a value.
-///     Provides a functional approach to error handling without using exceptions for control flow.
-/// </summary>
-/// <typeparam name="TValue">The type of the value contained in the success object.</typeparam>
-public sealed class Result<TValue> : Result
-{
-    public Result(Success<TValue> success) : base(success)
-    {
-    }
-
-    public Result(Error error) : base(error)
-    {
-    }
-
-    /// <summary>
-    ///     Gets the success object associated with this result, cast to the appropriate generic type.
-    /// </summary>
-    public new Success<TValue> Success => (Success<TValue>)base.Success;
-
-    /// <summary>
-    ///     Gets the value contained in the success object.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown when attempting to access the value of a failure result.</exception>
-    public TValue Value => IsSuccess
-        ? Success.Value
-        : throw new InvalidOperationException("The value of a failure result can not be accessed.");
-
-    /// <summary>
-    ///     Transforms the result using the appropriate function based on the success / failure state.
-    /// </summary>
-    /// <typeparam name="TOutput">The output type after transformation.</typeparam>
-    /// <param name="success">Function to call with the value if this is a success result.</param>
-    /// <param name="fail">Function to call with the error if this is a failure result.</param>
-    /// <returns>The output of either the success or failure function.</returns>
-    public TOutput Match<TOutput>(Func<TValue, TOutput> success, Func<Error, TOutput> fail)
-    {
-        return IsFailure
-            ? fail(Error)
-            : success(Value);
-    }
-
-    /// <summary>
-    ///     Chains this result to another result-producing function if this is a success.
-    /// </summary>
-    /// <typeparam name="TNext">The type of the value in the next result.</typeparam>
-    /// <param name="bind">The function to call with the value if this result is successful.</param>
-    /// <returns>The result of the binding function if successful, otherwise a failure result with the same error.</returns>
-    public Result<TNext> Bind<TNext>(Func<TValue, Result<TNext>> bind)
-    {
-        return IsSuccess ? bind(Value) : new Result<TNext>(Error);
-    }
-
-    /// <summary>
-    ///     Chains this result to an asynchronous result-producing function if this is a success.
-    /// </summary>
-    /// <typeparam name="TNext">The type of the value in the next result.</typeparam>
-    /// <param name="bind">The asynchronous function to call with the value if this result is successful.</param>
-    /// <returns>The result of the binding function if successful, otherwise a failure result with the same error.</returns>
-    public async Task<Result<TNext>> BindAsync<TNext>(Func<TValue, Task<Result<TNext>>> bind)
-    {
-        return IsSuccess ? await bind(Value) : new Result<TNext>(Error);
-    }
-
-    /// <summary>
-    /// Maps the value of a successful result to a new value of type <typeparamref name="TNext"/>
-    /// using the provided mapping function. If the result represents a failure, this operation
-    /// propagates the error without applying the mapping function.
-    /// </summary>
-    /// <typeparam name="TNext">The type of the new value after applying the mapping function.</typeparam>
-    /// <param name="map">
-    /// A function to transform the value of the successful result into a new value of type
-    /// <typeparamref name="TNext"/>.
-    /// </param>
-    /// <returns>
-    /// A new result containing the transformed value if the original result is successful,
-    /// or the original error if it is a failure.
-    /// </returns>
-    public Result<TNext> Map<TNext>(Func<TValue, TNext> map)
-    {
-        return IsSuccess
-            ? Successes.Success.Created(map(Value))
-            : new Result<TNext>(Error);
-    }
-
-    /// <summary>
-    /// Transforms the result of a successful operation asynchronously using the provided mapping function.
-    /// If the current result represents a success, the mapping function is applied to its value to produce the
-    /// next result. If the current result represents a failure, it is returned unmodified.
-    /// </summary>
-    /// <typeparam name="TNext">The type of the value in the new result after applying the map function.</typeparam>
-    /// <param name="map">The asynchronous function to transform the value of the successful result.</param>
-    /// <returns>
-    /// A new result that is the outcome of applying the asynchronous map function to the current value
-    /// if the current result is successful, or the original failure result otherwise.
-    /// </returns>
-    public async Task<Result<TNext>> MapAsync<TNext>(Func<TValue, Task<TNext>> map)
-    {
-        return IsSuccess
-            ? Successes.Success.Created(await map(Value))
-            : new Result<TNext>(Error);
-    }
-
-    /// <summary>
-    /// Converts a nested result structure into a flattened result, propagating success or failure as appropriate.
-    /// </summary>
-    /// <typeparam name="TNext">The type of the inner result in the flattened structure.</typeparam>
-    /// <returns>A flattened result of type <see cref="Result{TNext}" /> that reflects the outcome of the current nested result.</returns>
-    public Result<TNext> Flatten<TNext>() where TNext : class
-    {
-        if (!IsSuccess)
-        {
-            return new Result<TNext>(Error);
-        }
-
-        if (Success.Value is not Result<TNext> nestedResult)
-        {
-            return new Error(
-                ErrorKind.Unexpected,
-                "Flatten.InvalidNestedResult",
-                "The value of the result is not a nested result.");
-        }
-    
-        return nestedResult;
-    }
-
-    /// <summary>
-    /// Executes the specified action if the result is successful, passing the contained value to the action.
-    /// </summary>
-    /// <param name="action">The action to execute if the result is successful.</param>
-    /// <returns>The original result.</returns>
-    public Result<TValue> Tap(Action<TValue> action)
-    {
-        if (IsSuccess)
-        {
-            action(Value);
-        }
-
-        return this;
-    }
-    
-    /// <summary>
-    /// Asynchronously performs a specified action on the successful value of the result
-    /// without modifying the result.
-    /// </summary>
-    /// <param name="action">The asynchronous action to be executed if the result is successful.</param>
-    /// <returns>The original result, unchanged.</returns>
-    public async Task<Result<TValue>> TapAsync(Func<TValue, Task> action)
-    {
-        if (IsSuccess)
-        {
-            await action(Value);
-        }
-
-        return this;
-    }
-    
-    /// <summary>
-    ///     Defines an implicit conversion from a <see cref="Success{TValue}" /> object to a <see cref="Result{TValue}" />.
-    /// </summary>
-    /// <param name="success">The success object containing the value to be encapsulated in the result.</param>
-    /// <returns>A new <see cref="Result{TValue}" /> instance that encapsulates the success object.</returns>
-    public static implicit operator Result<TValue>(Success<TValue> success)
-    {
-        return new Result<TValue>(success);
-    }
-
-    /// <summary>
-    ///     Implicitly converts an error to a failure result.
-    /// </summary>
-    /// <param name="error">The error to convert.</param>
-    /// <returns>A failure result containing the specified error.</returns>
-    public static implicit operator Result<TValue>(Error error)
-    {
-        return new Result<TValue>(error);
     }
 }
