@@ -241,6 +241,29 @@ public static class ResultTValueExtensions
     }
 
     /// <summary>
+    /// Applies an asynchronous mapping function to the value of a successful result contained within a
+    /// task-wrapped result, producing a new result with the mapped value.
+    /// If the result is a failure, the error is propagated unchanged within the returned result.
+    /// </summary>
+    /// <typeparam name="TNext">The type of the transformed value in the returned result.</typeparam>
+    /// <typeparam name="TValue">The type of the value contained in the original result.</typeparam>
+    /// <param name="resultTask">A task that resolves to the result to be mapped.</param>
+    /// <param name="map">An asynchronous mapping function to be applied to the value of a successful result.</param>
+    /// <returns>
+    /// A task that resolves to a result containing the mapped value for a successful result or the original error
+    /// for a failure result.
+    /// </returns>
+    public static async Task<Result<TNext>> MapAsync<TNext, TValue>(
+        this Task<Result<TValue>> resultTask,
+        Func<TValue, Task<TNext>> map)
+    {
+        var result = await resultTask;
+        return result.IsSuccess
+            ? new Result<TNext>(new Success<TNext>(result.Success.Kind, await map(result.Value)))
+            : new Result<TNext>(result.Error);
+    }
+
+    /// <summary>
     ///     Transforms the value of a successful result using the provided <paramref name="bind" /> function, returning a new
     ///     result.
     ///     If the result is a failure, it returns a failure with the same error.
@@ -311,7 +334,7 @@ public static class ResultTValueExtensions
         var result = await resultTask;
         return result.IsSuccess ? await bind(result.Value) : result.Error;
     }
-    
+
     /// <summary>
     ///     Asynchronously binds the given successful result to a function that produces another asynchronous result
     ///     and returns the new result. If the given result is a failure, it returns a failure with the same error.
