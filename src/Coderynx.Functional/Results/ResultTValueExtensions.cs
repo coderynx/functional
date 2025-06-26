@@ -111,6 +111,14 @@ public static class ResultTValueExtensions
         var result = await resultTask;
         return result.IsSuccess ? await bind(result.Value) : new Result<TNext>(result.Error);
     }
+    
+    public static async Task<Result<TNext>> BindAsync<TNext, TValue>(
+        this Task<Result<TValue>> resultTask, 
+        Func<TValue, Result<TNext>> bind)
+    {
+        var result = await resultTask;
+        return result.IsSuccess ? bind(result.Value) : new Result<TNext>(result.Error);
+    }
 
     public static Result<TValue> Tap<TValue>(this Result<TValue> result, Action<TValue> action)
     {
