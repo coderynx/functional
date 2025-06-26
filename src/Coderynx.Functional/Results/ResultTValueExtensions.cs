@@ -617,4 +617,15 @@ public static class ResultTValueExtensions
             ? result
             : new Result<TValue>(onFailure());
     }
+
+    /// <summary>
+    /// Converts the result into a task that completes immediately with the given result.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value contained in the result.</typeparam>
+    /// <param name="result">The result to be converted into a task.</param>
+    /// <returns>A task that contains the provided result.</returns>
+    public static Task<Result<TValue>> AsTask<TValue>(this Result<TValue> result)
+    {
+        return Task.FromResult(result);
+    }
 }

@@ -226,4 +226,14 @@ public static class ResultExtensions
         var result = await task;
         return result.IsSuccess ? await next() : result;
     }
+
+    /// <summary>
+    /// Converts the specified <see cref="Result" /> into a <see cref="Task{TResult}" />, wrapping it in an asynchronous representation.
+    /// </summary>
+    /// <param name="result">The <see cref="Result" /> instance to be wrapped as a task.</param>
+    /// <returns>A completed <see cref="Task{TResult}" /> containing the original <see cref="Result" />.</returns>
+    public static Task<Result> AsTask(this Result result)
+    {
+        return Task.FromResult(result);
+    }
 }
