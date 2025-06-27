@@ -87,6 +87,22 @@ public static class ResultExtensions
     }
 
     /// <summary>
+    /// Transforms the current <see cref="Result" /> into another <see cref="Result{TValue}" /> by applying the specified function
+    /// if the current result represents a successful state. If the current result is a failure, the error is propagated.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value in the resulting <see cref="Result{TValue}" />.</typeparam>
+    /// <param name="result">The current <see cref="Result" /> to be transformed.</param>
+    /// <param name="func">A function that returns a <see cref="Result{TValue}" /> to be used when the current result is successful.</param>
+    /// <returns>A new <see cref="Result{TValue}" /> either containing the transformed value if the operation is successful
+    /// or propagating the error from the current result if it is a failure.</returns>
+    public static Result<TValue> Bind<TValue>(this Result result, Func<Result<TValue>> func)
+    {
+        return result.IsSuccess
+            ? func()
+            : result.Error;
+    }
+
+    /// <summary>
     ///     Applies an asynchronous bind function to a successful <see cref="Result" /> to produce a new result.
     ///     If the original <see cref="Result" /> is a failure, the bind function will not be invoked, and the failure is
     ///     returned directly.
