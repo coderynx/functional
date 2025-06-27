@@ -1,4 +1,5 @@
 using Coderynx.Functional.Results.Errors;
+using Coderynx.Functional.Results.Successes;
 
 namespace Coderynx.Functional.Results;
 
@@ -8,6 +9,21 @@ namespace Coderynx.Functional.Results;
 /// </summary>
 public static class ResultExtensions
 {
+    /// <summary>
+    /// Transforms a <see cref="Result" /> into a new result containing a value of a different type, if the original result
+    /// is successful. If the original result is a failure, the error is propagated instead.
+    /// </summary>
+    /// <typeparam name="TNext">The type of the value in the new result.</typeparam>
+    /// <param name="result">The original <see cref="Result" /> to transform.</param>
+    /// <param name="map">A function to generate the transformed value when the <paramref name="result" /> is successful.</param>
+    /// <returns>A new <see cref="Result{TNext}" /> containing the transformed value, or the error from the original result.</returns>
+    public static Result<TNext> Map<TNext>(this Result result, Func<TNext> map)
+    {
+        return result.IsSuccess
+            ? new Success<TNext>(result.Success.Kind, map())
+            : result.Error;
+    }
+    
     /// <summary>
     ///     Executes one of the provided functions based on the success or failure state of the <see cref="Result" />.
     /// </summary>
