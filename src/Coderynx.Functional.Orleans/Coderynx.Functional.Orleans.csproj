@@ -5,7 +5,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageId>Coderynx.Functional.Orleans</PackageId>
-        <Version>1.0.4</Version>
         <Authors>coderynx</Authors>
         <Description>Functional library extensions for Microsoft Orleans</Description>
         <PackageTags>functional</PackageTags>
