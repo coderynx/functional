@@ -241,17 +241,17 @@ public static class ResultTValueExtensions
     }
 
     /// <summary>
-    /// Applies an asynchronous mapping function to the value of a successful result contained within a
-    /// task-wrapped result, producing a new result with the mapped value.
-    /// If the result is a failure, the error is propagated unchanged within the returned result.
+    ///     Applies an asynchronous mapping function to the value of a successful result contained within a
+    ///     task-wrapped result, producing a new result with the mapped value.
+    ///     If the result is a failure, the error is propagated unchanged within the returned result.
     /// </summary>
     /// <typeparam name="TNext">The type of the transformed value in the returned result.</typeparam>
     /// <typeparam name="TValue">The type of the value contained in the original result.</typeparam>
     /// <param name="resultTask">A task that resolves to the result to be mapped.</param>
     /// <param name="map">An asynchronous mapping function to be applied to the value of a successful result.</param>
     /// <returns>
-    /// A task that resolves to a result containing the mapped value for a successful result or the original error
-    /// for a failure result.
+    ///     A task that resolves to a result containing the mapped value for a successful result or the original error
+    ///     for a failure result.
     /// </returns>
     public static async Task<Result<TNext>> MapAsync<TNext, TValue>(
         this Task<Result<TValue>> resultTask,
@@ -292,18 +292,19 @@ public static class ResultTValueExtensions
     }
 
     /// <summary>
-    /// Asynchronously binds the result's value to the specified function, returning a new asynchronous result.
-    /// Executes the <paramref name="bind" /> function if the result is successful or preserves the current error otherwise.
+    ///     Asynchronously binds the result's value to the specified function, returning a new asynchronous result.
+    ///     Executes the <paramref name="bind" /> function if the result is successful or preserves the current error
+    ///     otherwise.
     /// </summary>
     /// <typeparam name="TValue">The type of the value contained in the result.</typeparam>
     /// <param name="result">The result to be bound.</param>
     /// <param name="bind">
-    /// A function to be executed if the result is successful, which takes the success value as a parameter and returns
-    /// a <see cref="Task{Result}" />.
+    ///     A function to be executed if the result is successful, which takes the success value as a parameter and returns
+    ///     a <see cref="Task{Result}" />.
     /// </param>
     /// <returns>
-    /// A task that represents the asynchronous binding operation. The resultant task contains a new result based on the
-    /// outcome of the binding function or the original error if the result was not successful.
+    ///     A task that represents the asynchronous binding operation. The resultant task contains a new result based on the
+    ///     outcome of the binding function or the original error if the result was not successful.
     /// </returns>
     public static async Task<Result> BindAsync<TValue>(
         this Result<TValue> result,
@@ -313,19 +314,19 @@ public static class ResultTValueExtensions
     }
 
     /// <summary>
-    /// Asynchronously binds the result of the task-based result to a function that returns a new task-based result.
-    /// If the result is successful, executes the <paramref name="bind" /> function with the successful value.
-    /// Otherwise, returns the error from the original result.
+    ///     Asynchronously binds the result of the task-based result to a function that returns a new task-based result.
+    ///     If the result is successful, executes the <paramref name="bind" /> function with the successful value.
+    ///     Otherwise, returns the error from the original result.
     /// </summary>
     /// <typeparam name="TValue">The type of the value contained in the original result.</typeparam>
     /// <param name="resultTask">The task representing the original result to be bound.</param>
     /// <param name="bind">
-    /// A function to be executed if the original result is successful, which takes the value as a parameter
-    /// and returns a new task-based result.
+    ///     A function to be executed if the original result is successful, which takes the value as a parameter
+    ///     and returns a new task-based result.
     /// </param>
     /// <returns>
-    /// A task representing the resulting operation, which will contain the result of executing the
-    /// <paramref name="bind" /> function or the original error if the result was unsuccessful.
+    ///     A task representing the resulting operation, which will contain the result of executing the
+    ///     <paramref name="bind" /> function or the original error if the result was unsuccessful.
     /// </returns>
     public static async Task<Result> BindAsync<TValue>(
         this Task<Result<TValue>> resultTask,
@@ -399,27 +400,27 @@ public static class ResultTValueExtensions
     }
 
     /// <summary>
-    /// Transforms the value of a successful result asynchronously using the provided mapping function.
-    /// If the result is a failure, it returns the failure as-is.
+    ///     Transforms the value of a successful result asynchronously using the provided mapping function.
+    ///     If the result is a failure, it returns the failure as-is.
     /// </summary>
     /// <typeparam name="TNext">The type of the transformed value.</typeparam>
     /// <typeparam name="TValue">The type of the value contained in the original result.</typeparam>
     /// <param name="resultTask">A task representing the result to be transformed.</param>
     /// <param name="map">A function to transform the value of a successful result.</param>
     /// <returns>
-    /// A task representing the transformed result. If the original result is successful, the task contains the
-    /// transformed result. Otherwise, the task contains the same failure result.
+    ///     A task representing the transformed result. If the original result is successful, the task contains the
+    ///     transformed result. Otherwise, the task contains the same failure result.
     /// </returns>
     public static async Task<Result<TNext>> MapAsync<TNext, TValue>(
         this Task<Result<TValue>> resultTask,
         Func<TValue, TNext> map)
     {
         var result = await resultTask;
-        return result.IsSuccess 
+        return result.IsSuccess
             ? new Result<TNext>(new Success<TNext>(result.Success.Kind, map(result.Value)))
             : new Result<TNext>(result.Error);
     }
-    
+
     /// <summary>
     ///     Executes a specified action if the result state is successful and returns the original result.
     ///     This method allows performing side effects without altering the result's state or value.
@@ -619,7 +620,7 @@ public static class ResultTValueExtensions
     }
 
     /// <summary>
-    /// Converts the result into a task that completes immediately with the given result.
+    ///     Converts the result into a task that completes immediately with the given result.
     /// </summary>
     /// <typeparam name="TValue">The type of the value contained in the result.</typeparam>
     /// <param name="result">The result to be converted into a task.</param>

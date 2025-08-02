@@ -1,0 +1,124 @@
+name: Release NuGet Package
+
+on:
+  workflow_call:
+    inputs:
+      project-path:
+        description: 'Path to the project directory'
+        required: true
+        type: string
+      project-name:
+        description: 'Name of the project for artifacts'
+        required: true
+        type: string
+      dotnet-version:
+        description: '.NET version to use'
+        required: false
+        type: string
+        default: '9.x'
+    secrets:
+      NUGET_API_KEY:
+        required: true
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      semver: ${{ steps.version.outputs.semver }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ inputs.dotnet-version }}
+
+      - name: Install GitVersioning
+        run: dotnet tool install --global nbgv
+
+      - name: Get version from nbgv
+        id: version
+        working-directory: ${{ inputs.project-path }}
+        run: |
+          echo "version=$(nbgv get-version -v NuGetPackageVersion)" >> $GITHUB_OUTPUT
+          echo "semver=$(nbgv get-version -v SemVer2)" >> $GITHUB_OUTPUT
+
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          if git rev-parse "${{ inputs.project-name }}-v${{ steps.version.outputs.semver }}" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create and push tag
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          git config --local user.name "GitHub Actions"
+          git tag "${{ inputs.project-name }}-v${{ steps.version.outputs.semver }}"
+          git push origin "${{ inputs.project-name }}-v${{ steps.version.outputs.semver }}"
+
+      - name: Restore dependencies
+        if: steps.check_tag.outputs.exists == 'false'
+        working-directory: ${{ inputs.project-path }}
+        run: dotnet restore
+
+      - name: Build
+        if: steps.check_tag.outputs.exists == 'false'
+        working-directory: ${{ inputs.project-path }}
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test
+        if: steps.check_tag.outputs.exists == 'false'
+        working-directory: ${{ inputs.project-path }}
+        run: dotnet test --configuration Release --no-build --verbosity normal
+
+      - name: Pack
+        if: steps.check_tag.outputs.exists == 'false'
+        working-directory: ${{ inputs.project-path }}
+        run: dotnet pack --configuration Release --no-build --output ./nupkg
+
+      - name: Generate changelog
+        if: steps.check_tag.outputs.exists == 'false'
+        id: changelog
+        working-directory: ${{ inputs.project-path }}
+        run: |
+          echo "## Changes in ${{ steps.version.outputs.semver }}" > release-notes.md
+          echo "" >> release-notes.md
+          git log --pretty=format:"- %s" $(git describe --tags --abbrev=0 HEAD~1)..HEAD >> release-notes.md || echo "- Initial release" >> release-notes.md
+
+      - name: Create GitHub Release
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.project-name }}-v${{ steps.version.outputs.semver }}
+          name: ${{ inputs.project-name }} v${{ steps.version.outputs.semver }}
+          body_path: ${{ inputs.project-path }}/release-notes.md
+          files: |
+            ${{ inputs.project-path }}/nupkg/*.nupkg
+            ${{ inputs.project-path }}/nupkg/*.snupkg
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.version, '-') }}
+
+      - name: Publish to NuGet
+        if: steps.check_tag.outputs.exists == 'false'
+        working-directory: ${{ inputs.project-path }}
+        run: dotnet nuget push ./nupkg/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+
+      - name: Upload packages as artifacts
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-packages-${{ inputs.project-name }}-${{ steps.version.outputs.version }}
+          path: ${{ inputs.project-path }}/nupkg/*
