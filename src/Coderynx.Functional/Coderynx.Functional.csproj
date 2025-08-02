@@ -7,7 +7,7 @@
         <PackageId>Coderynx.Functional</PackageId>
         <Authors>coderynx</Authors>
         <Description>Result library</Description>
-        <PackageTags>result</PackageTags>
+        <PackageTags>functional;result;option;error;success</PackageTags>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
