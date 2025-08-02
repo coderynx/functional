@@ -10,8 +10,8 @@ namespace Coderynx.Functional.Results;
 public static class ResultExtensions
 {
     /// <summary>
-    /// Transforms a <see cref="Result" /> into a new result containing a value of a different type, if the original result
-    /// is successful. If the original result is a failure, the error is propagated instead.
+    ///     Transforms a <see cref="Result" /> into a new result containing a value of a different type, if the original result
+    ///     is successful. If the original result is a failure, the error is propagated instead.
     /// </summary>
     /// <typeparam name="TNext">The type of the value in the new result.</typeparam>
     /// <param name="result">The original <see cref="Result" /> to transform.</param>
@@ -25,14 +25,16 @@ public static class ResultExtensions
     }
 
     /// <summary>
-    /// Asynchronously transforms a <see cref="Result" /> into a new result containing a value of a different type,
-    /// if the original result is successful. If the original result is a failure, the error is propagated instead.
+    ///     Asynchronously transforms a <see cref="Result" /> into a new result containing a value of a different type,
+    ///     if the original result is successful. If the original result is a failure, the error is propagated instead.
     /// </summary>
     /// <typeparam name="TNext">The type of the value in the new result.</typeparam>
     /// <param name="result">The task representing the original <see cref="Result" /> to transform.</param>
     /// <param name="map">A function to generate the transformed value when the <paramref name="result" /> is successful.</param>
-    /// <returns>A task representing the new <see cref="Result{TNext}" /> containing the transformed value,
-    /// or the error from the original result.</returns>
+    /// <returns>
+    ///     A task representing the new <see cref="Result{TNext}" /> containing the transformed value,
+    ///     or the error from the original result.
+    /// </returns>
     public static async Task<Result<TNext>> MapAsync<TNext>(this Task<Result> result, Func<TNext> map)
     {
         var res = await result;
@@ -40,7 +42,7 @@ public static class ResultExtensions
             ? new Success<TNext>(res.Success.Kind, map())
             : res.Error;
     }
-    
+
     /// <summary>
     ///     Executes one of the provided functions based on the success or failure state of the <see cref="Result" />.
     /// </summary>
@@ -120,14 +122,20 @@ public static class ResultExtensions
     }
 
     /// <summary>
-    /// Transforms the current <see cref="Result" /> into another <see cref="Result{TValue}" /> by applying the specified function
-    /// if the current result represents a successful state. If the current result is a failure, the error is propagated.
+    ///     Transforms the current <see cref="Result" /> into another <see cref="Result{TValue}" /> by applying the specified
+    ///     function
+    ///     if the current result represents a successful state. If the current result is a failure, the error is propagated.
     /// </summary>
     /// <typeparam name="TValue">The type of the value in the resulting <see cref="Result{TValue}" />.</typeparam>
     /// <param name="result">The current <see cref="Result" /> to be transformed.</param>
-    /// <param name="func">A function that returns a <see cref="Result{TValue}" /> to be used when the current result is successful.</param>
-    /// <returns>A new <see cref="Result{TValue}" /> either containing the transformed value if the operation is successful
-    /// or propagating the error from the current result if it is a failure.</returns>
+    /// <param name="func">
+    ///     A function that returns a <see cref="Result{TValue}" /> to be used when the current result is
+    ///     successful.
+    /// </param>
+    /// <returns>
+    ///     A new <see cref="Result{TValue}" /> either containing the transformed value if the operation is successful
+    ///     or propagating the error from the current result if it is a failure.
+    /// </returns>
     public static Result<TValue> Bind<TValue>(this Result result, Func<Result<TValue>> func)
     {
         return result.IsSuccess
@@ -277,7 +285,8 @@ public static class ResultExtensions
     }
 
     /// <summary>
-    /// Converts the specified <see cref="Result" /> into a <see cref="Task{TResult}" />, wrapping it in an asynchronous representation.
+    ///     Converts the specified <see cref="Result" /> into a <see cref="Task{TResult}" />, wrapping it in an asynchronous
+    ///     representation.
     /// </summary>
     /// <param name="result">The <see cref="Result" /> instance to be wrapped as a task.</param>
     /// <returns>A completed <see cref="Task{TResult}" /> containing the original <see cref="Result" />.</returns>
