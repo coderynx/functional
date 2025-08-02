@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test --configuration Release --no-build --verbosity normal
+
+      - name: Get version
+        id: version
+        run: |
+          dotnet tool install --global nbgv
+          echo "version=$(nbgv get-version -v NuGetPackageVersion)" >> $GITHUB_OUTPUT
+          echo "semver=$(nbgv get-version -v SemVer2)" >> $GITHUB_OUTPUT
+
+      - name: Pack
+        run: |
+          dotnet pack --configuration Release --no-build --output ./nupkg
+
+      - name: Upload packages as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages-${{ steps.version.outputs.version }}
+          path: ./nupkg/*.nupkg
+
+      - name: Upload symbols as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-symbols-${{ steps.version.outputs.version }}
+          path: ./nupkg/*.snupkg
