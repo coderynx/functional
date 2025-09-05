@@ -18,7 +18,9 @@ public static class ResultExtensions
     /// <returns>An IResult representing the appropriate HTTP response based on the Result state.</returns>
     public static IResult ToHttpResult(this Result result)
     {
-        return ToHttpResultInternal(result, null);
+        return result.IsFailure ? 
+            result.ToHttpErrorResult() : 
+            ToHttpSuccessResult(result, null);
     }
 
     /// <summary>
@@ -29,9 +31,17 @@ public static class ResultExtensions
     /// <returns>An IResult representing the appropriate HTTP response based on the Result state.</returns>
     public static IResult ToHttpResult<TValue>(this Result<TValue> result)
     {
-        return result.Success.Value is not null
-            ? ToHttpResultInternal(result, result.Value)
-            : ToHttpResultInternal(result, null);
+        if (result.IsFailure)
+        {
+            return result.ToHttpErrorResult();
+        }
+
+        if (result.Success.Value is null)
+        {
+            return ToHttpSuccessResult(result, null);
+        }
+
+        return ToHttpSuccessResult(result, result.Value);
     }
 
     /// <summary>
@@ -43,45 +53,34 @@ public static class ResultExtensions
     /// <returns>An IResult representing the appropriate HTTP response based on the Result state.</returns>
     public static IResult ToHttpResult<TValue>(this Result<TValue> result, Func<TValue, object> transform)
     {
+        if (result.IsFailure)
+        {
+            return result.ToHttpErrorResult();
+        }
+        
         if (result.Success.Value is null)
         {
-            return ToHttpResultInternal(result, null);
+            return ToHttpSuccessResult(result, null);
         }
 
         var transformerResult = transform(result.Value);
-        return ToHttpResultInternal(result, transformerResult);
+        return ToHttpSuccessResult(result, transformerResult);
     }
 
-    /// <summary>
-    ///     Internal helper method to convert a Result to an HTTP response.
-    /// </summary>
-    /// <param name="result">The Result to convert.</param>
-    /// <param name="value">The value to include in the response (if applicable).</param>
-    /// <returns>An appropriate IResult based on the Result's Success or Error state.</returns>
-    private static IResult ToHttpResultInternal(Result result, object? value)
+    private static IResult ToHttpSuccessResult(Result result, object? value)
     {
-        if (result.IsSuccess)
+        return result.Success.Kind switch
         {
-            return result.Success.Kind switch
-            {
-                SuccessKind.Created => Microsoft.AspNetCore.Http.Results.Ok(value),
-                SuccessKind.Updated => Microsoft.AspNetCore.Http.Results.NoContent(),
-                SuccessKind.Deleted => Microsoft.AspNetCore.Http.Results.NoContent(),
-                SuccessKind.Found => Microsoft.AspNetCore.Http.Results.Ok(value),
-                SuccessKind.Accepted => Microsoft.AspNetCore.Http.Results.Accepted(),
-                _ => Microsoft.AspNetCore.Http.Results.Ok()
-            };
-        }
-
-        return result.ToProblem();
+            SuccessKind.Created => Microsoft.AspNetCore.Http.Results.Ok(value),
+            SuccessKind.Updated => Microsoft.AspNetCore.Http.Results.NoContent(),
+            SuccessKind.Deleted => Microsoft.AspNetCore.Http.Results.NoContent(),
+            SuccessKind.Found => Microsoft.AspNetCore.Http.Results.Ok(value),
+            SuccessKind.Accepted => Microsoft.AspNetCore.Http.Results.Accepted(),
+            _ => Microsoft.AspNetCore.Http.Results.Ok()
+        };
     }
 
-    /// <summary>
-    ///     Converts a failed Result to a ProblemDetails HTTP response.
-    /// </summary>
-    /// <param name="result">The Result containing an error.</param>
-    /// <returns>An IResult representing a problem details response based on the error information.</returns>
-    private static IResult ToProblem(this Result result)
+    private static IResult ToHttpErrorResult(this Result result)
     {
         var details = new ProblemDetails
         {
