@@ -29,7 +29,7 @@ public static class ResultExtensions
     /// <returns>An IResult representing the appropriate HTTP response based on the Result state.</returns>
     public static IResult ToHttpResult<TValue>(this Result<TValue> result)
     {
-        return result.Value is not null
+        return result.Success.Value is not null
             ? ToHttpResultInternal(result, result.Value)
             : ToHttpResultInternal(result, null);
     }
@@ -43,13 +43,12 @@ public static class ResultExtensions
     /// <returns>An IResult representing the appropriate HTTP response based on the Result state.</returns>
     public static IResult ToHttpResult<TValue>(this Result<TValue> result, Func<TValue, object> transform)
     {
-        if (result.Value is null)
+        if (result.Success.Value is null)
         {
             return ToHttpResultInternal(result, null);
         }
 
         var transformerResult = transform(result.Value);
-
         return ToHttpResultInternal(result, transformerResult);
     }
 
