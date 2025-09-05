@@ -19,8 +19,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Coderynx.Functional" Version="1.7.11" />
-        <PackageReference Include="Microsoft.Orleans.Sdk" Version="9.2.1" />
+        <PackageReference Include="Coderynx.Functional" Version="1.7.11"/>
+        <PackageReference Include="Microsoft.Orleans.Sdk" Version="9.2.1"/>
     </ItemGroup>
 
 </Project>
