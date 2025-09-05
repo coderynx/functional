@@ -43,7 +43,7 @@ public static class ResultExtensions
     /// <returns>An IResult representing the appropriate HTTP response based on the Result state.</returns>
     public static IResult ToHttpResult<TValue>(this Result<TValue> result, Func<TValue, object> transform)
     {
-        if (result.Value is not null)
+        if (result.Value is null)
         {
             return ToHttpResultInternal(result, null);
         }
@@ -91,6 +91,7 @@ public static class ResultExtensions
                 ErrorKind.None => "https://tools.ietf.org/html/rfc7231#section-6.5.1",
                 ErrorKind.NotFound => "https://tools.ietf.org/html/rfc7231#section-6.5.4",
                 ErrorKind.Conflict => "https://tools.ietf.org/html/rfc7231#section-6.5.8",
+                ErrorKind.InvalidInput => "https://tools.ietf.org/html/rfc7231#section-6.5.1",
                 _ => "https://tools.ietf.org/html/rfc7231#section-6.5.1"
             },
             Title = result.Error.Code,
@@ -99,6 +100,7 @@ public static class ResultExtensions
                 ErrorKind.None => StatusCodes.Status400BadRequest,
                 ErrorKind.NotFound => StatusCodes.Status404NotFound,
                 ErrorKind.Conflict => StatusCodes.Status409Conflict,
+                ErrorKind.InvalidInput => StatusCodes.Status400BadRequest,
                 _ => StatusCodes.Status500InternalServerError
             },
             Detail = result.Error.Message,

@@ -6,5 +6,7 @@
     </Folder>
     <Folder Name="/tests/">
         <Project Path="tests\Coderynx.Functional.Tests\Coderynx.Functional.Tests.csproj" Type="Classic C#"/>
+        <Project Path="tests\Coderynx.Functional.WebApi.Tests\Coderynx.Functional.WebApi.Tests.csproj"
+                 Type="Classic C#"/>
     </Folder>
 </Solution>
