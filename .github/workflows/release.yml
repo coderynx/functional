@@ -16,7 +16,7 @@ jobs:
     with:
       project-path: ${{ matrix.project-path }}
       project-name: ${{ matrix.project-name }}
-      dotnet-version: '9.x'
+      dotnet-version: '10.x'
     secrets:
       NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
     strategy:

@@ -15,7 +15,7 @@ on:
         description: '.NET version to use'
         required: false
         type: string
-        default: '9.x'
+        default: '10.x'
     secrets:
       NUGET_API_KEY:
         required: true
