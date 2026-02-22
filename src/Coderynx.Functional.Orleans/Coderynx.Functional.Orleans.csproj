@@ -20,7 +20,7 @@
 
     <ItemGroup>
         <PackageReference Include="Coderynx.Functional" Version="1.8.0" />
-        <PackageReference Include="Microsoft.Orleans.Sdk" Version="9.2.1"/>
+        <PackageReference Include="Microsoft.Orleans.Sdk" Version="10.0.1" />
         <PackageReference Update="Nerdbank.GitVersioning">
           <Version>3.9.50</Version>
         </PackageReference>
